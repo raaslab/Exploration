@@ -1,0 +1,22 @@
+<launch>
+  <master auto="start"/>
+
+<!-- Run the map server -->
+<node name="map_server" pkg="map_server" type="map_server" args="/home/technologic/catkin_ws/src/my_robot_name_2dnav/maps/isr_floor0.pgm 0.05"/>
+
+<!-- Run AMCL -->
+<include file="$(find amcl)/examples/amcl_diff.launch" /> 
+<!--<include file="/home/technologic/catkin_ws/src/my_robot_name_2dnav/amcl_pioneer.launch" /> -->
+
+
+  <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
+    <rosparam file="/home/technologic/catkin_ws/src/my_robot_name_2dnav/costmap_common_params.yaml" command="load" ns="global_costmap" />
+    <rosparam file="/home/technologic/catkin_ws/src/my_robot_name_2dnav/costmap_common_params.yaml" command="load" ns="local_costmap" />
+    <rosparam file="/home/technologic/catkin_ws/src/my_robot_name_2dnav/local_costmap_params.yaml" command="load" />
+    <rosparam file="/home/technologic/catkin_ws/src/my_robot_name_2dnav/global_costmap_params.yaml" command="load" />
+    <rosparam file="/home/technologic/catkin_ws/src/my_robot_name_2dnav/base_local_planner_params.yaml" command="load" />
+  </node>
+</launch>
+
+
+  

@@ -1,0 +1,6 @@
+<launch>
+  <node pkg="rosaria" type="RosAria" name="RosAria" output="screen">
+    <param name="_port" value="192.168.1.139:8101" />
+  </node>
+
+</launch>
