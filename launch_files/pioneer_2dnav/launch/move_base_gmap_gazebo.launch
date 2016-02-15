@@ -46,6 +46,7 @@
     <rosparam file="$(find pioneer_2dnav)/params/base_local_planner_params.yaml" command="load" />
   </node>
 
+ <node pkg="robot_pose_publisher" type="robot_pose_publisher" name="robot_pose_publisher"/>
 
 
 </launch>

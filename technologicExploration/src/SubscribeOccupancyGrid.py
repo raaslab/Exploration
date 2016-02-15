@@ -72,10 +72,10 @@ def callback(data):
 				frontierCell=[]
 				valid=1
 				#This is to make sure that there are no frontiers too close to the obstacles
-				count_i=scan_area_i-20
-				while(count_i <= scan_area_i+20):
-					count_j=scan_area_j-20
-					while(count_j <= scan_area_j+20):
+				count_i=scan_area_i-10
+				while(count_i <= scan_area_i+10):
+					count_j=scan_area_j-10
+					while(count_j <= scan_area_j+10):
 						#print(scan_area_i)
 						#print(scan_area_j)
 						if occupancyGridMatFin[count_i][count_j]==100:
