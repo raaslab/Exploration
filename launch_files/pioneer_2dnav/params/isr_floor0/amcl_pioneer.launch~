@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<launch>
+<node pkg="amcl" type="amcl" name="amcl" args="scan:=/scan_filtered" output="screen">
+  <param name="odom_model_type" value="diff"/>
+
+  <!-- isr_floor_0 -->
+   <param name="initial_pose_x" value="0.0"/>
+  <param name="initial_pose_y" value="0.0"/>
+  <param name="initial_pose_z" value="0.0"/>
+  <param name="initial_pose_a" value="0.0"/>
+
+</node>
+</launch>

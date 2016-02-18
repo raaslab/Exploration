@@ -3,14 +3,11 @@
   <master auto="start"/>
 
   <!-- Run the map server -->
-  <!--<node name="map_server" pkg="map_server" type="map_server" args="$(find pioneer_2dnav)/maps/isr_floor0.pgm 0.05" respawn="false"/>
-  <node name="map_server" pkg="map_server" type="map_server" args="$(find pioneer_2dnav)/maps/isr_floor0.yaml" respawn="false" output="screen"/>
+  <!--<node name="map_server" pkg="map_server" type="map_server" args="$(find pioneer_2dnav)/maps/isr_floor0.pgm 0.05" respawn="false"/>-->
+ <node name="map_server" pkg="map_server" type="map_server" args="$(find pioneer_2dnav)/maps/map.yaml"/>
 
-  
-  <include file="$(find pioneer_2dnav)/params/isr_floor0/amcl_pioneer.launch" />-->
+  <include file="$(find pioneer_2dnav)/params/isr_floor0/amcl_pioneer.launch" />
 
-<node pkg="tf" type="static_transform_publisher" name="base_link_to_laser" args="0.225 0.0 0.1 0.0 0.0 0.0 1.0 /base_link /laser 100"/>
-<node pkg="gmapping" type="slam_gmapping" name="slam_gmapping" output="screen"/>
   <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
 
     <rosparam file="$(find pioneer_2dnav)/params/costmap_common_params.yaml" command="load" ns="global_costmap" />
