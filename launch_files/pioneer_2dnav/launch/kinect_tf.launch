@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<launch>
+
+<!-- <node pkg="tf" type="static_transform_publisher" name="base_link_to_kinect" args="0 0.0 0 0.0 0.0 0.0 1.0 base_link camera 100" /> -->
+<node pkg="tf" type="static_transform_publisher" name="base_link_to_kinect_ir" args="0  0 0.5 1.10 3.14 1.15 base_link kinect2_ir_optical_frame 100" />
+ 
+
+</launch>
