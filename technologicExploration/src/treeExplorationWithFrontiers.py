@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 #launch and get the occupancy grid
 import rospy
+import string
 import roslib; roslib.load_manifest('technologicExploration')
 from std_msgs.msg import Bool
 from std_msgs.msg import Int8
@@ -18,6 +19,11 @@ from geometry_msgs.msg import (
     TransformStamped,
     Quaternion,
 )
+
+
+import cv2
+from cv_bridge import CvBridge, CvBridgeError
+
 from tf2_msgs.msg import TFMessage
 import numpy as np
 from collections import deque
@@ -26,6 +32,7 @@ from actionlib_msgs.msg import *
 from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal, MoveBaseActionFeedback, MoveBaseActionResult
 import tf
 import cv2
+import pylab as P
 import math
 from matplotlib import pyplot as plt
 from sensor_msgs.msg import PointCloud2
@@ -40,7 +47,11 @@ import time
 from std_msgs.msg import String
 import thread
 from actionlib_msgs.msg import GoalStatusArray
-
+import itertools
+from string import ascii_uppercase
+from visualization_msgs.msg import Marker
+from visualization_msgs.msg import MarkerArray
+from sensor_msgs.msg import Image
 count=0
 stack=[]
 root=[]
@@ -53,10 +64,11 @@ visited_poses=[]
 global_goals=[]
 orig_x=0.00
 orig_y=0.00
-
+delta=0.25
 visited_nodes=[]
 assigned_nodes=[]
 explored_nodes=[]
+global_nodes=[]
 under_exploration_nodes=[]
 unexplored_nodes=[]
 
@@ -124,6 +136,8 @@ def callback(data,curr_root,robotsList):
     global height
     global width
     global global_counter
+    global global_nodes
+    global delta
     f=[]
     print("callback called by ")
     for robot in robotsList:
@@ -135,7 +149,8 @@ def callback(data,curr_root,robotsList):
 
     print("length of goals")
     print(len(global_goals))
-    delta=0.25
+    edge_length=300
+    
     epsilon = 0.5
     frontierCells=[]
     frontier=[]
@@ -162,7 +177,7 @@ def callback(data,curr_root,robotsList):
     orig_x=data.info.origin.position.x
     orig_y=data.info.origin.position.y
 
-    
+    alpha_list=list(string.ascii_uppercase)
     occupancyGridMat=np.asarray(grid, dtype=np.int8)
     occupancyGridMatFin=np.reshape(occupancyGridMat, (height, width))
     
@@ -321,7 +336,7 @@ def callback(data,curr_root,robotsList):
             scan_area_i+=1
         if(checkExisting(bvc)):
             if(invalid_counter<3):
-                global_BVs.append(bvc)
+                #global_BVs.append(bvc)
                 f.append(bv)
                 counter_to_check=0
                 if(bi>4 and occupancyGridMatFin[bi-4][bj] == 100):
@@ -338,8 +353,8 @@ def callback(data,curr_root,robotsList):
                         if ((gx,gy) not in global_goals and (gx+0.25,gy) not in global_goals and (gx+0.25,gy+0.25) not in global_goals and (gx-0.25,gy) not in global_goals and (gx-0.25,gy-0.25) not in global_goals and (gx+0.25,gy-0.25) not in global_goals and (gx-0.25,gy+0.25) not in global_goals and (gx,gy+0.25) not in global_goals and (gx,gy-0.25) not in global_goals):
                             global_goals.append(goal_tup)
                             G.add_node(goal_tup)
-                            G.add_edge(curr_root,goal_tup)
-                            
+                            G.add_edge(curr_root,goal_tup,length=edge_length)
+                            global_BVs.append(bvc)
                     elif (bj< width-5 and occupancyGridMatFin[bi][bj+5] == 0):
                         clearance=1
                         while(bj+clearance!=width and occupancyGridMatFin[bi][bj+clearance]!=100 and occupancyGridMatFin[bi][bj+clearance]!=100):
@@ -353,7 +368,8 @@ def callback(data,curr_root,robotsList):
                         if ((gx,gy) not in global_goals and (gx+0.25,gy) not in global_goals and (gx-0.25,gy) not in global_goals and (gx,gy+0.25) not in global_goals and (gx,gy-0.25) not in global_goals):
                             global_goals.append(goal_tup)
                             G.add_node(goal_tup)
-                            G.add_edge(curr_root,goal_tup)
+                            G.add_edge(curr_root,goal_tup,length=edge_length)
+                            global_BVs.append(bvc)
                 elif(bi <height-4 and occupancyGridMatFin[bi+4][bj] == 100):
                     if(bj>5 and occupancyGridMatFin[bi][bj-5] == 0):
                         clearance=1
@@ -368,7 +384,8 @@ def callback(data,curr_root,robotsList):
                         if ((gx,gy) not in global_goals and (gx+0.25,gy) not in global_goals and (gx-0.25,gy) not in global_goals and (gx,gy+0.25) not in global_goals and (gx,gy-0.25) not in global_goals):
                             global_goals.append(goal_tup)
                             G.add_node(goal_tup)
-                            G.add_edge(curr_root,goal_tup)
+                            G.add_edge(curr_root,goal_tup,length=edge_length)
+                            global_BVs.append(bvc)
                     elif (bj< width-5 and occupancyGridMatFin[bi][bj+5] == 0):
                         clearance=1
                         while(bj+clearance!=width and occupancyGridMatFin[bi][bj+clearance]!=100 and occupancyGridMatFin[bi][bj+clearance]!=100):
@@ -382,7 +399,8 @@ def callback(data,curr_root,robotsList):
                         if ((gx,gy) not in global_goals and (gx+0.25,gy) not in global_goals and (gx-0.25,gy) not in global_goals and (gx,gy+0.25) not in global_goals and (gx,gy-0.25) not in global_goals):
                             global_goals.append(goal_tup)
                             G.add_node(goal_tup)
-                            G.add_edge(curr_root,goal_tup)
+                            G.add_edge(curr_root,goal_tup,length=edge_length)
+                            global_BVs.append(bvc)
                 elif(bj>4 and occupancyGridMatFin[bi][bj-4] == 100):
                     if(bj>5 and occupancyGridMatFin[bi-5][bj] == 0):
                         clearance=1
@@ -397,7 +415,8 @@ def callback(data,curr_root,robotsList):
                         if ((gx,gy) not in global_goals and (gx+0.25,gy) not in global_goals and (gx-0.25,gy) not in global_goals and (gx,gy+0.25) not in global_goals and (gx,gy-0.25) not in global_goals):
                             global_goals.append(goal_tup)
                             G.add_node(goal_tup)
-                            G.add_edge(curr_root,goal_tup)
+                            G.add_edge(curr_root,goal_tup,length=edge_length)
+                            global_BVs.append(bvc)
                     elif (bi<height-5 and occupancyGridMatFin[bi+5][bj] == 0):
                         clearance=1
                         while(bi+clearance!=height and occupancyGridMatFin[bi+clearance][bj]!=100 and occupancyGridMatFin[bi+clearance][bj]!=-1):
@@ -411,7 +430,8 @@ def callback(data,curr_root,robotsList):
                         if ((gx,gy) not in global_goals and (gx+0.25,gy) not in global_goals and (gx-0.25,gy) not in global_goals and (gx,gy+0.25) not in global_goals and (gx,gy-0.25) not in global_goals):
                             global_goals.append(goal_tup)
                             G.add_node(goal_tup)
-                            G.add_edge(curr_root,goal_tup)
+                            G.add_edge(curr_root,goal_tup,length=edge_length)
+                            global_BVs.append(bvc)
                 elif(bj<width-4 and occupancyGridMatFin[bi][bj+4] == 100):
                     if(bi>5 and occupancyGridMatFin[bi-5][bj] == 0):
                         clearance=1
@@ -427,7 +447,8 @@ def callback(data,curr_root,robotsList):
                         if ((gx,gy) not in global_goals and (gx+0.25,gy) not in global_goals and (gx-0.25,gy) not in global_goals and (gx,gy+0.25) not in global_goals and (gx,gy-0.25) not in global_goals):
                             global_goals.append(goal_tup)
                             G.add_node(goal_tup)
-                            G.add_edge(curr_root,goal_tup)
+                            G.add_edge(curr_root,goal_tup,length=edge_length)
+                            global_BVs.append(bvc)
                     elif (bi<height-5 and occupancyGridMatFin[bi+5][bj] == 0):
                         clearance=1
                         while(bi+clearance!=height and occupancyGridMatFin[bi+clearance][bj]!=100 and occupancyGridMatFin[bi+clearance][bj]!=-1):
@@ -441,7 +462,8 @@ def callback(data,curr_root,robotsList):
                         if ((gx,gy) not in global_goals and (gx+0.25,gy) not in global_goals and (gx-0.25,gy) not in global_goals and (gx,gy+0.25) not in global_goals and (gx,gy-0.25) not in global_goals):
                             global_goals.append(goal_tup)
                             G.add_node(goal_tup)
-                            G.add_edge(curr_root,goal_tup)
+                            G.add_edge(curr_root,goal_tup,length=edge_length)
+                            global_BVs.append(bvc)
                 #f.extend(frontierLine)
         else:
             print("this node was invalid")
@@ -496,9 +518,7 @@ def callback(data,curr_root,robotsList):
                     scan_area_j+=1
                 scan_area_i+=1
             max_l=0
-            #lev=len(G.predecessors(dictBVGoals[bv_tup]))
             lev=getLevel(dictBVGoals[bv_tup],0)
-            #print(lll)
             for d in dominators:
                 print("checking dominator")
                 print(dictBVGoals[tupvbv])
@@ -519,12 +539,12 @@ def callback(data,curr_root,robotsList):
 
             if(max_l>0):
                 G.remove_node(dictBVGoals[bv_tup])
-                G.add_edge(dictBVGoals[max_d],dictBVGoals[bv_tup])
+                G.add_edge(dictBVGoals[max_d],dictBVGoals[bv_tup],length=edge_length)
             else:
                 print("No dominators")
             closed_list.append(bv_tup)
             #f.append([bi,bj])
-            publishFrontiers(f)
+            #publishFrontiers(f)
     
     for frontiercell in allFrontiers:
         
@@ -594,7 +614,7 @@ def callback(data,curr_root,robotsList):
                     if(valid==1):
                         #print("whole2")
                         #print(currentFrontier)
-                        #f.extend(currentFrontier)
+                        f.extend(currentFrontier)
                         listOfFrontiers.append(currentFrontier)
                     continue
                     #print(currentFrontierCell)
@@ -606,23 +626,39 @@ def callback(data,curr_root,robotsList):
     print("length before")
     print(len(listOfFrontiers))
 
-    frontierGoals=[elem for elem in listOfFrontiers if len(elem) > 4] 
- 
+
+
+
+    frontierGoals=[elem for elem in listOfFrontiers if len(elem) > 7] 
+    
+    # frontierGoals=[]
+    # for frontierIntermediate in frontierGoalsIntermediate:
+    #     si=[]
+    #     for fr in frontierIntermediate:
+    #         if (check15neighboursForOccupied(fr[0],fr[1],occupancyGridMatFin)):
+    #             si.append(fr)
+    #             f.append(fr)
+    #             #publishFrontiers(f)
+    #     frontierGoals.append(si)
+
+
+
     print("length")
     print(len(frontierGoals))
     print(frontierGoals)
+
 
     for front in frontierGoals:
         goal_front=(front[len(front)/2])
         gi=goal_front[0]
         gj=goal_front[1]
-        if (gi>1 and occupancyGridMatFin[gi-2][gj]==0):
+        if ((gi>1 and occupancyGridMatFin[gi-2][gj]==0) and ((gi<height-2 and occupancyGridMatFin[gi+2][gj]==-1)or(gi>=height-2))):
             goal_cell=[gi-2,gj]
-        elif(gi<height-2 and occupancyGridMatFin[gi+2][gj]==0):
+        elif((gi<height-2 and occupancyGridMatFin[gi+2][gj]==0) and ((gi>1 and occupancyGridMatFin[gi-2][gj]==-1)or(gi<=1))):
             goal_cell=[gi+2,gj]
-        elif(gj>2 and occupancyGridMatFin[gi][gj-2]==0):
+        elif((gj>1 and occupancyGridMatFin[gi][gj-2]==0) and ((gj<width-2 and occupancyGridMatFin[gi][gj+2]==-1)or(gj>=width-2))):
             goal_cell=[gi,gj-2]
-        elif(gj<width-2 and occupancyGridMatFin[gi][gj+2]==0):
+        elif((gj<width-2 and occupancyGridMatFin[gi][gj+2]==0) and ((gj>1 and occupancyGridMatFin[gi][gj-2]==-1) or(gj<=1))):
             goal_cell=[gi,gj+2]
         else:
             goal_cell=goal_front
@@ -642,10 +678,11 @@ def callback(data,curr_root,robotsList):
                 scan_area_j=0
                 while(scan_area_j < width): 
                     px,py=getcoords([scan_area_i,scan_area_j])
-                    if (((px>bx and px<posex)or (px<bx and px>posex))and((py>by and py<posey)or (py<by and py>posey))):
+                    if (((px>=bx and px<=posex)or (px<=bx and px>=posex))and((py>=by and py<=posey)or (py<=by and py>=posey))):
                         if (abs(py - (a*px+b)) <= epsilon):
-                            f.append([scan_area_i,scan_area_j])
+                            #f.append([scan_area_i,scan_area_j])
                             if(occupancyGridMatFin[scan_area_i][scan_area_j] ==-1 ):
+                                print("invalid because of unknown cells")
                                 invalid_goal+=5
                     scan_area_j+=1
                 scan_area_i+=1
@@ -655,7 +692,7 @@ def callback(data,curr_root,robotsList):
         dist_gol_to_root=np.linalg.norm(rob-gol)
         print("dist_gol_to_root")
         print(dist_gol_to_root)
-        if(dist_gol_to_root>6.5 and curr_root!=(0,0)):
+        if(dist_gol_to_root>4.5 and curr_root!=(0,0)):
             invalid_goal+=5
         print("got here")
         goals.append(goal_cell)
@@ -664,24 +701,83 @@ def callback(data,curr_root,robotsList):
         print(goal_tup)
         print(global_goals)
         if (invalid_goal<5 and (gx,gy) not in global_goals and (gx+0.25,gy) not in global_goals and (gx-0.25,gy) not in global_goals and (gx,gy+0.25) not in global_goals and (gx,gy-0.25) not in global_goals):
-            
             global_goals.append(goal_tup)
             G.add_node(goal_tup)
-            G.add_edge(curr_root,goal_tup)
+            G.add_edge(curr_root,goal_tup,length=edge_length)
+    number_of_labels=len(G)
+    #labels=list(islice(multiletters(ascii_uppercase),10))
+    labels={}
+    counter=0
+    listofnodes=[global_root]
 
-    
+    for n in G.nodes():
+        if n not in global_nodes:
+            global_nodes.append(n)
 
+    #listofnodes.extend(nx.algorithms.bfs_successors(G, global_root).values())
+    #listofnodes=[]
+    #listofnodes.append(global_root)
+    #listofnodes.extend(list(nx.algorithms.bfs_successors(G, global_root).values()))
+    #print(nx.algorithms.bfs_successors(G, global_root).values())
+    for s in iter_all_strings():
+        node_to_label=global_nodes[counter]
+        labels[node_to_label]=s
+        counter+=1
+        if counter == number_of_labels:
+            break
+    topic = '/visualization_marker_array'
+    MarkerPublisher = rospy.Publisher(topic, MarkerArray)
+    markerArray = MarkerArray()
+    for n in global_nodes:
+        marker = Marker()
+        marker.header.frame_id = "/map"
+        marker.type = marker.TEXT_VIEW_FACING
+        marker.text=labels[n]
+        marker.scale.z = 1.5
+        marker.color.a = 1.0
+        marker.color.r = 1.0
+        marker.color.g = 0.0
+        marker.color.b = 0.0
+        marker.pose.orientation.w = 1.0
+        marker.pose.position.x=n[0]
+        marker.pose.position.y=n[1]
+        marker.pose.position.z=0
+        markerArray.markers.append(marker)
+        id=0
+        for m in markerArray.markers:
+            m.id = id
+            id += 1
+        MarkerPublisher.publish(markerArray)
+        rospy.sleep(0.01)
     plt.clf()
+    #plt.figure(figsize=(1,1))
+    
+    #P.figure(figsize=(20,20))
+
     plt.title("Tree generated")
-    pos=graphviz_layout(G,prog='dot')
-    nx.draw(G,pos,with_labels=True,arrows=False)
-    plt.savefig('nx_test.png')
+    #pos=graphviz_layout(G,prog='neato')
+    pos=graphviz_layout(G,prog='dot',args='-Eminlen=5 -Gnodesep=25')
+    #nx.draw(G,pos,with_labels=False,arrows=False,font_size=16)
+    nx.draw(G, pos=pos,node_size=500, with_labels=False,arrows=False,)
+    nx.draw_networkx_nodes(G,pos,node_color='r',node_size=500)
+    nx.draw_networkx_edges(G,pos,width=3.0,alpha=0.5,arrows=False,length=edge_length)
+    #nx.draw_networkx_labels(G,pos,labels,font_size=16)
+    nx.draw_networkx_labels(G,pos, labels,font_size=12)
+    
+    #tree_name="tree"
+    #+=str(global_counter)
+    #tree_name+=".pdf"
+    #plt.show()
+    plt.savefig("tree_generated.png")
+
+    #TreeImagePub = rospy.Publisher('TreeImage', Image, queue_size=10)
+    #treeImg=
 
     node_in_tree={}
     
     actual_successors=G.successors(curr_root)
 
-    publishFrontiers(f)
+    #publishFrontiers(f)
     
     assignGoals(curr_root,actual_successors,robotsList,occupancyGridMatFin)
 
@@ -693,20 +789,29 @@ def assignGoals(curr_root,actual_successors,robotsList,occupancyGridMatFin):
     global assigned_nodes
     print("goals to assign to")
     print(robotsList)
-
     r=len(robotsList)
     succ = actual_successors[:]
     listOfRobots=robotsList[:]
     under_exploration_successors=[]
+    print("before filter")
+    print(len(succ))
     for s in actual_successors:
-        if s in explored_nodes:
+        goal_tup=s
+        gi,gj=getindices(goal_tup)
+        #print(goal_tup in assigned_nodes or gi==0 or gj==0 or gi==height or gj==width or  occupancyGridMatFin[gi-1][gj]==-1 or occupancyGridMatFin[gi][gj-1]==-1 or occupancyGridMatFin[gi+1][gj]==-1 or occupancyGridMatFin[gi][gj+1]==-1)
+        if(s in explored_nodes):
             succ.remove(s)
         elif s in under_exploration_nodes:
+            #if(goal_tup in assigned_nodes or gi==0 or gj==0 or gi==height or gj==width or  occupancyGridMatFin[gi-1][gj]==-1 or occupancyGridMatFin[gi][gj-1]==-1 or occupancyGridMatFin[gi+1][gj]==-1 or occupancyGridMatFin[gi][gj+1]==-1):
             under_exploration_successors.append(s)
             succ.remove(s)
-    print("number of goals")
+    print("number of un-exploration goals")
     s=len(succ)
     print(s)
+    if(under_exploration_successors):
+        print("number of under-exploration goals")
+        s=len(under_exploration_successors)
+
     us=len(under_exploration_successors)
     listOfSuccessors=succ[:]
     listOfUnexploredSuccessors=under_exploration_successors[:]
@@ -734,18 +839,21 @@ def assignGoals(curr_root,actual_successors,robotsList,occupancyGridMatFin):
             checkStatus()
         elif(s==2):
             if(r==1):
+                robot=listOfRobots[0]
+                # if(robot in ("robot1","robot3","robot5","robot7")):
+                #     goal_tup=succ[0]
+                # else:
                 goal_tup=succ[0]
                 next_root=goal_tup
-                robot=listOfRobots[0]
                 index_robot = int(robot[-1])-1
                 assigned_nodes[index_robot]=next_root
                 cluster_status[index_robot]=1
                 under_exploration_nodes.append(next_root)
                 sendGoalRectilinear(next_root,goal_tup,listOfRobots[0],occupancyGridMatFin)
             else:
-                goal_tup1=succ[0]
+                goal_tup1=succ[1]
                 next_root1=goal_tup1
-                goal_tup2=succ[1]
+                goal_tup2=succ[0]
                 next_root2=goal_tup2
                 under_exploration_nodes.append(goal_tup1)
                 under_exploration_nodes.append(goal_tup2)
@@ -852,7 +960,10 @@ def assignGoals(curr_root,actual_successors,robotsList,occupancyGridMatFin):
         elif(us==2):
             if(r==1):
                 robot=listOfRobots[0]
-                goal_tup=under_exploration_successors[0]
+                if(robot in ("robot1","robot3","robot5","robot7")):
+                    goal_tup=under_exploration_successors[0]
+                else:
+                    goal_tup=under_exploration_successors[1]
                 next_root=goal_tup
                 index_robot = int(robot[-1])-1
                 assigned_nodes[index_robot]=next_root
@@ -863,9 +974,9 @@ def assignGoals(curr_root,actual_successors,robotsList,occupancyGridMatFin):
                     msg = rospy.wait_for_message("/projected_map", OccupancyGrid)
                     callback(msg,goal_tup,listOfRobots)
             else:
-                goal_tup1=under_exploration_successors[0]
+                goal_tup1=under_exploration_successors[1]
                 next_root1=goal_tup1
-                goal_tup2=under_exploration_successors[1]
+                goal_tup2=under_exploration_successors[0]
                 next_root2=goal_tup2
                 for index, robot in enumerate(listOfRobots):
                     if index <= len(listOfRobots)/2:
@@ -1016,6 +1127,32 @@ def checkneighbourBVs(gl,global_BVs):
         checkAreai+=0.25
 
 
+def checkneighbourBVs(gl,global_BVs):
+    gi,gj=getcoords(gl)
+    checkAreai=gi-0.5
+    while (checkAreai <= gi+0.5):
+        checkAreaj=gj-0.5
+        while(checkAreaj <= gj+0.5):
+            if([checkAreai,checkAreaj] in global_BVs):
+                print("found existing")
+                return True
+            checkAreaj+=0.25
+        checkAreai+=0.25
+
+
+def check15neighboursForOccupied(curri,currj,occupancyGridMatFin):
+    scan_area_i= curri-3
+    while (scan_area_i <= curri+3):
+        scan_area_j= currj-3
+        while(scan_area_j <= currj+3): 
+            if(scan_area_i>=0 and scan_area_j>=0 and scan_area_j<width and scan_area_i<height):
+                #print("didn't get in")
+                if(occupancyGridMatFin[scan_area_i][scan_area_j]==100):
+                    #print("should be false")
+                    return False
+            scan_area_j+=1
+        scan_area_i+=1
+    return True
 
 
 def checkStatus():
@@ -1044,11 +1181,19 @@ def checkStatus():
         print(index_robot)
         if(statuslength>0):
             statusString=str(l[0])
-            if((prevStatus[index_robot] in statusString and prevStatus[index_robot]!="" and StatusChecker[index_robot]<5) or (prevStatus[index_robot]=="status: 3" and StatusChecker[index_robot]==0)):
-                if(prevStatus[index_robot]=="status: 3" or prevStatus[index_robot]=="status: 4"):
+            print(statusString)
+            if(((prevStatus[index_robot] in statusString or prevStatus[index_robot]=="") and StatusChecker[index_robot]<10) or (prevStatus[index_robot]=="status: 3" and StatusChecker[index_robot]<5) or ((prevStatus[index_robot] in statusString and prevStatus[index_robot]=="status: 4") and StatusChecker[index_robot]<20)):
+                if(successStatus in statusString):
+                    prevStatus[index_robot]=successStatus
                     StatusChecker[index_robot]+=1
+                elif(abortedStatus in statusString):
+                    prevStatus[index_robot]=abortedStatus
+                    StatusChecker[index_robot]+=1
+                elif(acceptedStatus in statusString):
+                    prevStatus[index_robot]=acceptedStatus
+                    StatusChecker[index_robot]=0
                 else:
-                    StatusChecker[index_robot]=0 
+                    StatusChecker[index_robot]=0
                 print("same status : continue checking")
             else:
                 StatusChecker[index_robot]=0
@@ -1101,6 +1246,7 @@ def checkStatus():
                                 StatusChecker[i]=0
                             callback(msg,next_root,list_of_robots[6:8])
                     else:
+                        StatusChecker[index_robot]=0
                         callback(msg,next_root,list_of_robots[index_robot:index_robot+1])
                 elif(acceptedStatus in statusString):
                     prevStatus[index_robot]=acceptedStatus
@@ -1121,23 +1267,45 @@ def checkStatus():
                         print(current_status)
                         print(index_robot)
                         if(current_status==8):
+                            for i in range(0, 8):
+                                prevStatus[i]=abortedStatus
+                                StatusChecker[i]=0
                             callback(msg,next_root,list_of_robots[:])
                         elif(current_status==4):
                             if(index_robot in (0,1,2,3)):
+                                for i in range(0, 4):
+                                    prevStatus[i]=abortedStatus
+                                    StatusChecker[i]=0
                                 callback(msg,next_root,list_of_robots[0:4])
                             else:
+                                for i in range(4, 8):
+                                    prevStatus[i]=abortedStatus
+                                    StatusChecker[i]=0
                                 callback(msg,next_root,list_of_robots[4:8])
                         elif(current_status==2):
                             if(index_robot in (0,1)):
+                                for i in range(0, 2):
+                                    prevStatus[i]=abortedStatus
+                                    StatusChecker[i]=0
                                 callback(msg,next_root,list_of_robots[0:2])
                             elif(index_robot in (2,3)):
+                                for i in range(2, 4):
+                                    prevStatus[i]=abortedStatus
+                                    StatusChecker[i]=0
                                 callback(msg,next_root,list_of_robots[2:4])
                             elif(index_robot in (4,5)):
+                                for i in range(4, 6):
+                                    prevStatus[i]=abortedStatus
+                                    StatusChecker[i]=0
                                 callback(msg,next_root,list_of_robots[4:6])
                             elif(index_robot in (6,7)):
+                                for i in range(6, 8 ):
+                                    prevStatus[i]=abortedStatus
+                                    StatusChecker[i]=0
                                 callback(msg,next_root,list_of_robots[6:8])
                             callback(msg,prev_root,robotsList)
                         else:
+                            StatusChecker[index_robot]=0
                             callback(msg,next_root,list_of_robots[index_robot:index_robot+1])
     rospy.sleep(1.0)
     checkStatus()
@@ -1179,24 +1347,43 @@ def checkNeighbours(bv,occupancyGridMatFin,rejectedFrontiers,frontier):
     return valid
 
 
+def checkNearbyFrontieirs(curri,currj,occupancyGridMatFin):
+    global height
+    global width
+    scan_area_i= curri-5
+    while (scan_area_i <= curri+5):
+        scan_area_j= currj-5
+        while(scan_area_j <= currj+5): 
+            if(scan_area_i>=0 and scan_area_j>=0 and scan_area_j<width and scan_area_i<height):
+                #print("didn't get in")
+                if(occupancyGridMatFin[scan_area_i][scan_area_j]==0):
+                    #print("should be false")
+                    return False
+            scan_area_j+=1
+        scan_area_i+=1
+    return True
+
 def checkExisting(bvc):
     print("check existing called")
     global global_BVs
+    global delta
+    global height
+    global width
     f=[]
-    delta=0.25
     bi=(bvc[1] - orig_y)/delta
     bj=(bvc[0] - orig_x)/delta
 
-    checkAreai=bi-1
-    while (checkAreai <= bi+1):
-        checkAreaj=bj-1
-        while(checkAreaj <= bj+1):
+    checkAreai=bi-3
+    while (checkAreai <= bi+3):
+        checkAreaj=bj-3
+        while(checkAreaj <= bj+3):
             #f.append([checkAreai,checkAreaj])
-            check_x,check_y=getcoords([checkAreai,checkAreaj]) 
-            if([check_x,check_y] in global_BVs):
-                #publishFrontiers(f)
-                print("found existing")
-                return False
+            if(checkAreai>=0 and checkAreaj>=0 and checkAreaj<width and checkAreai<height):
+                check_x,check_y=getcoords([checkAreai,checkAreaj]) 
+                if([check_x,check_y] in global_BVs):
+                    #publishFrontiers(f)
+                    print("found existing")
+                    return False
             checkAreaj+=1
         checkAreai+=1
     print("not found earlier")
@@ -1208,8 +1395,8 @@ def getFrontiers(pose_x,pose_y,occupancyGridMatFin):
     global count
     global stack
     global visited_poses
+    global delta
     length=800
-    delta=0.25
     size=100
     scan_range=40.0
     frontierCells=[]
@@ -1249,7 +1436,7 @@ def getFrontiers(pose_x,pose_y,occupancyGridMatFin):
 def publishFrontiers(frontier):
     global orig_x
     global orig_y
-    delta=0.25
+    global delta
     size=100
     print(orig_x)
     print(orig_y)
@@ -1398,7 +1585,7 @@ def PrevPos(goal_x,goal_y):
     if not frontier:
         explorationcomplete()
     else:
-        publishFrontiers(frontier)
+        #publishFrontiers(frontier)
         #frontier=frontierCells[0]
         x, y=getcoords(frontier)
         print(x)
@@ -1408,8 +1595,7 @@ def PrevPos(goal_x,goal_y):
 def getcoords(frontier):
     global orig_x
     global orig_y
-    delta=0.25
-    size=100
+    global delta
     i= frontier[0]
     j= frontier[1]
     x= orig_x + (j * delta)
@@ -1419,39 +1605,40 @@ def getcoords(frontier):
 def getindices(frontier):
     global orig_x
     global orig_y
-    delta=0.25
+    global delta
     x= frontier[0]
     y= frontier[1]
     j = (x - orig_x)/delta
     i = (y - orig_y)/delta
     return(i, j)
 
-def scan(curr_root,robotName):
+def scan(curr_root,no_of_robs):
     global list_of_robots
     global cluster_status
     global StatusChecker
     global prevStatus
     global assigned_nodes
     print('Scanning...')
+    robotsList=[]
+    counter=1
+    print("number of ROBOTS")
+    print(no_of_robs)
+    while(counter<=int(no_of_robs)):
+        rob="robot" + str(counter)
+        rotateInPlace(rob)
+        robotsList.append(rob)
+        print("counter   :  "+str(counter))
+        counter+=1
     try:
         msg = rospy.wait_for_message("/projected_map", OccupancyGrid)
     except:
         print("Exception thrown")
-    #callback(msg)
-    robot_pose=get_pose(robotName)
-    
-    robotsList=[]
-    robotsList.append("robot1")
-    robotsList.append("robot2")
-    robotsList.append("robot3")
-    robotsList.append("robot4")
     total_no_of_robots=len(robotsList)
     list_of_robots=robotsList[:]
     cluster_status=[total_no_of_robots] * total_no_of_robots
     StatusChecker=[0] * total_no_of_robots
     prevStatus=[""] * total_no_of_robots    
     assigned_nodes=[curr_root] * total_no_of_robots
-
     callback(msg,curr_root,robotsList)
    
 
@@ -1484,6 +1671,10 @@ class Node(object):
     def get_status(self, obj):
         return self.status
 
+def multiletters(seq):
+    for i in count(1):
+        for s in product(seq, repeat=i):
+            yield ''.join(s)
 
 def get_pose(robotName):
     top="/"
@@ -1497,7 +1688,7 @@ def insert_origin():
     global G
     print("Adding origin")
     global root
-    delta=0.25
+    global delta
     #current_pose=get_pose()
     #pose_x=current_pose.position.x
     #pose_y=current_pose.position.y
@@ -1510,6 +1701,12 @@ def insert_origin():
     #rotateInPlace()
     root.append(tup_pose)
     #print(stack)
+def iter_all_strings():
+    size = 1
+    while True:
+        for s in itertools.product(ascii_uppercase, repeat=size):
+            yield "".join(s)
+        size +=1
 
 def rotateInPlace(robotName):
     print("This is to make the robot rotate in place!")
@@ -1534,16 +1731,13 @@ def rotateInPlace(robotName):
     p.publish(twist)
 
 if __name__ == '__main__':
+    sys.setrecursionlimit(1500)
     print('Initialized')
-    print(sys.argv[1])
+    no_of_robs=sys.argv[1]
     start_time=time.time()
     rospy.init_node('SubscribeOccupancyGrid', anonymous=True)
     insert_origin()
-    rotateInPlace("robot1")
-    rotateInPlace("robot2")
-    rotateInPlace("robot3")
-    rotateInPlace("robot4")
-    
-
+    #rotateInPlace("robot1")
+    #rotateInPlace("robot2")
     global_root=(0,0)
-    scan(global_root,"robot1")
+    scan(global_root,no_of_robs)

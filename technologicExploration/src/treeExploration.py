@@ -55,24 +55,33 @@ orig_y=0.00
 visited_nodes=[]
 robot1Goal=()
 robot2Goal=()
+robot3Goal=()
+robot4Goal=()
+
 prevStatus1=""
 prevStatus2=""
+prevStatus3=""
+prevStatus4=""
 robot1Stack=[]
 robot2Stack=[]
+robot3Stack=[]
+robot4Stack=[]
+
+cluster1Status=""
+cluster2Status=""
+cluster3Status=""
+cluster4Status=""
+
+Status1Checker=0
+Status2Checker=0
+Status3Checker=0
+Status4Checker=0
+
 G=nx.DiGraph()
 global_BVs=[]
 check=0
 start_time=int(math.floor(time.time()))
-def callback(data,curr_root,robot1=None,robot2=None):
-    print("callback called by ")
-    if(robot2 is None):
-        print("robot1")
-    else:
-        print(robot2)
-    print("current root")
-    print(curr_root)
-
-
+def callback(data,curr_root,robot1=None,robot2=None,robot3=None,robot4=None):
     global count
     global stack
     global visited_poses
@@ -88,8 +97,40 @@ def callback(data,curr_root,robot1=None,robot2=None):
     global robot2Goal
     global robot1Stack
     global robot2Stack
+    global robot3Goal
+    global robot4Goal
+    global robot3Stack
+    global robot4Stack
     global global_root
+    global cluster1Status
+    global cluster2Status
+    global cluster3Status
+    global cluster4Status
+    global prevStatus1
+    global prevStatus2
+    global prevStatus3
+    global prevStatus4
 
+    print("callback called by ")
+    if(robot1=="robot1"):
+        print("robot1")
+    elif(robot2=="robot2"):
+        print(robot2)
+    elif(robot3=="robot3"):
+        print(robot3)
+    elif(robot4=="robot4"):
+        print(robot4)
+    elif(robot1=="both" and robot2=="both"):
+        print("called by robot1 and robot2")
+    elif(robot3=="both" and robot4=="both"):
+        print("called by robot3 and robot4")
+    else:
+        print("called by all")
+    print("current root")
+    print(curr_root)
+
+
+    
     print("length of BVs")
     print(len(global_BVs))
 
@@ -125,17 +166,9 @@ def callback(data,curr_root,robot1=None,robot2=None):
     occupancyGridMat=np.asarray(grid, dtype=np.int8)
     occupancyGridMatFin=np.reshape(occupancyGridMat, (height, width))
     
-    if(curr_root==(0,0)):
-        pose_x=0.0
-        pose_y=0.0
-    else:
-        if (robot2 is None):
-            robotName="robot1"
-        else:
-            robotName="robot2"
-        current_pose=get_pose(robotName)
-        pose_x=current_pose.position.x
-        pose_y=current_pose.position.y
+    #if(robot1=="all" or robot2=="both" or robot3=="both"):
+    pose_x=curr_root[0]
+    pose_y=curr_root[1]
     #frontier=getFrontiers(pose_x,pose_x,occupancyGridMatFin)
     #Getting the matrix coordinates of the robot from the x and y
     pose_i = int((round(pose_y,2) - orig_y)/delta)
@@ -277,7 +310,7 @@ def callback(data,curr_root,robot1=None,robot2=None):
                 scan_area_j+=1
             scan_area_i+=1
         if(checkExisting(bvc)):
-            if(invalid_counter<5):
+            if(invalid_counter<3):
                 global_BVs.append(bvc)
                 f.append(bv)
                 counter_to_check=0
@@ -311,9 +344,7 @@ def callback(data,curr_root,robot1=None,robot2=None):
                             global_goals.append(goal_tup)
                             G.add_node(goal_tup)
                             G.add_edge(curr_root,goal_tup)
-                else:
-                    counter_to_check+=1
-                if(bi <height-4 and occupancyGridMatFin[bi+4][bj] == 100):
+                elif(bi <height-4 and occupancyGridMatFin[bi+4][bj] == 100):
                     if(bj>5 and occupancyGridMatFin[bi][bj-5] == 0):
                         clearance=1
                         while(bj-clearance!=0 and occupancyGridMatFin[bi][bj-clearance]!=100 and occupancyGridMatFin[bi][bj-clearance]!=-1):
@@ -342,9 +373,7 @@ def callback(data,curr_root,robot1=None,robot2=None):
                             global_goals.append(goal_tup)
                             G.add_node(goal_tup)
                             G.add_edge(curr_root,goal_tup)
-                else:
-                    counter_to_check+=1
-                if(bj>4 and occupancyGridMatFin[bi][bj-4] == 100):
+                elif(bj>4 and occupancyGridMatFin[bi][bj-4] == 100):
                     if(bj>5 and occupancyGridMatFin[bi-5][bj] == 0):
                         clearance=1
                         while(bi-clearance!=0 and occupancyGridMatFin[bi-clearance][bj]!=100 and occupancyGridMatFin[bi-clearance][bj]!=-1):
@@ -373,7 +402,7 @@ def callback(data,curr_root,robot1=None,robot2=None):
                             global_goals.append(goal_tup)
                             G.add_node(goal_tup)
                             G.add_edge(curr_root,goal_tup)
-                if(bj<width-4 and occupancyGridMatFin[bi][bj+4] == 100):
+                elif(bj<width-4 and occupancyGridMatFin[bi][bj+4] == 100):
                     if(bi>5 and occupancyGridMatFin[bi-5][bj] == 0):
                         clearance=1
                         while(bi-clearance!=0 and occupancyGridMatFin[bi-clearance][bj]!=100 and occupancyGridMatFin[bi-clearance][bj]!=-1):
@@ -402,11 +431,7 @@ def callback(data,curr_root,robot1=None,robot2=None):
                             global_goals.append(goal_tup)
                             G.add_node(goal_tup)
                             G.add_edge(curr_root,goal_tup)
-                else:
-                    counter_to_check+=1
-                if(counter_to_check==4):
-                    print("goal not added")
-
+                #f.extend(frontierLine)
         else:
             print("this node was invalid")
             #f.append(bv)
@@ -460,12 +485,12 @@ def callback(data,curr_root,robot1=None,robot2=None):
                     scan_area_j+=1
                 scan_area_i+=1
             max_l=0
-            #lev=len(G.predecessors(dictBVGoals[bv_tup]))
-            lev=getLevel(dictBVGoals[bv_tup],0)
+            lev=len(G.predecessors(dictBVGoals[bv_tup]))
+            #lev=getLevel(dictBVGoals[bv_tup],0)
             #print(lll)
             for d in dominators:
-                    #l=len(G.predecessors(dictBVGoals[d]))
-                    l=getLevel(dictBVGoals[d],0)
+                l=len(G.predecessors(dictBVGoals[d]))
+                #l=getLevel(dictBVGoals[d],0)
                     # if(l==lev):
                     #     if d in closed_list:
                     #         max_l=l
@@ -473,11 +498,11 @@ def callback(data,curr_root,robot1=None,robot2=None):
                     #         print("this is the dominator")
                     #         print(max_d)
                     # else:    
-                    if l>max_l:
-                        max_l=l
-                        max_d=d
-                        print("this is the dominator")
-                        print(max_d)
+                if (l>max_l):
+                    max_l=l
+                    max_d=d
+                    print("this is the dominator")
+                    print(max_d)
 
             if(max_l>0):
                 G.remove_node(dictBVGoals[bv_tup])
@@ -486,9 +511,7 @@ def callback(data,curr_root,robot1=None,robot2=None):
                 print("No dominators")
             closed_list.append(bv_tup)
             #f.append([bi,bj])
-            publishFrontiers(f)
-
-    
+            #publishFrontiers(f)
     
     plt.clf()
     plt.title("Tree generated")
@@ -505,6 +528,24 @@ def callback(data,curr_root,robot1=None,robot2=None):
         print(s)
         if(s in visited_nodes):
             succ.remove(s)
+        if(robot1=="robot1"):
+            if(s==robot2Goal or s==robot3Goal or s==robot4Goal):
+                succ.remove(s)
+        elif(robot2=="robot2"):
+            if(s==robot1Goal or s==robot3Goal or s==robot4Goal):
+                succ.remove(s)
+        elif(robot1 =="both"):
+            if(s==robot3Goal or s==robot4Goal):
+                succ.remove(s)
+        elif(robot3=="robot3"):
+            if(s==robot1Goal or s==robot2Goal or s==robot4Goal):
+                succ.remove(s)
+        elif(robot4=="robot4"):
+            if(s==robot1Goal or s==robot2Goal or s==robot3Goal):
+                succ.remove(s)
+        elif(robot3 =="both"):
+            if(s==robot1Goal or s==robot2Goal):
+                succ.remove(s)
     print("visited_nodes")
     print(visited_nodes)
     print("actual successors")
@@ -518,43 +559,231 @@ def callback(data,curr_root,robot1=None,robot2=None):
 
     if(succ):
         publishFrontiers(f)
-        if(robot1=="robot1" and robot2=="robot2"):
+        if(robot1=="all" and robot2=="all" and robot3=="all" and robot4=="all"):
+            rotateInPlace("robot1")
             if(len(succ)==1):
+                #Single goal: all robots go to the same node
                 robot1Stack.append(node_in_tree)
                 robot2Stack.append(node_in_tree)
-                visited_nodes.append(succ[0])
+                robot3Stack.append(node_in_tree)
+                robot4Stack.append(node_in_tree)
+                # adding goals
+
                 robot1Goal=succ[0]
-                if (occupancyGridMatFin[robot1Goal[0]-4][robot1Goal[1]]==0):
-                    robot2Goal=(robot1Goal[0]-4,robot1Goal[1])
-                elif(occupancyGridMatFin[robot1Goal[0]+4][robot1Goal[1]]==0):
-                    robot2Goal=(robot1Goal[0]+4,robot1Goal[1])
-                elif(occupancyGridMatFin[robot1Goal[0]][robot1Goal[1]-4]==0):
-                    robot2Goal=(robot1Goal[0]+4,robot1Goal[1]-4)
+                gi = int((round(robot1Goal[1],2) - orig_y)/delta)
+                gj = int((round(robot1Goal[0],2) - orig_x)/delta)
+                
+                f.append([gi,gj])
+                #gi,gj=getindices(robot1Goal)
+                if (occupancyGridMatFin[gi-4][gj]==0):
+                    
+                    robot2Goal=getcoords([gi-2,gj])
+                    robot3Goal=getcoords([gi-4,gj])
+                    robot4Goal=getcoords([gi-6,gj])
+                elif(occupancyGridMatFin[gi+4][gj]==0):
+                    robot2Goal=getcoords([gi+2,gj])
+                    robot3Goal=getcoords([gi+4,gj])
+                    robot4Goal=getcoords([gi+6,gj])
+                elif(occupancyGridMatFin[gi][gj-4]==0):
+                    robot2Goal=getcoords([gi,gj-2])
+                    robot3Goal=getcoords([gi,gj-4])
+                    robot4Goal=getcoords([gi,gj-6])
                 else:
-                    robot2Goal=(robot1Goal[0],robot1Goal[1]+4)
-            else:
-                rotateInPlace("robot2")
+                    robot2Goal=getcoords([gi,gj+2])
+                    robot3Goal=getcoords([gi,gj+4])
+                    robot4Goal=getcoords([gi,gj+6])
+                #send goals to each robot
+                sendGoalRectilinear(robot1Goal,"robot1")
+                sendGoalRectilinear(robot2Goal,"robot2")
+                sendGoalRectilinear(robot3Goal,"robot3")
+                sendGoalRectilinear(robot4Goal,"robot4")
+
+                cluster1Status="all"
+                cluster2Status="all"
+                cluster3Status="all"
+                cluster4Status="all"
+                #check if robots reached the goals
+                checkStatus(robot1Goal,robot2Goal,robot3Goal,robot4Goal)
+            elif(len(succ)==2):
                 robot1Stack.append(node_in_tree)
                 robot2Stack.append(node_in_tree)
-                visited_nodes.append(succ[0])
-                visited_nodes.append(succ[1])
+                robot3Stack.append(node_in_tree)
+                robot4Stack.append(node_in_tree)
+                #assign first goal to the first cluster
+                robot1Goal=succ[0]
+                gi = int((round(robot1Goal[1],2) - orig_y)/delta)
+                gj = int((round(robot1Goal[0],2) - orig_x)/delta)
+                f.append([gi,gj])
+                if (occupancyGridMatFin[gi-4][gj]==0):
+                    robot2Goal=getcoords([gi-4,gj])
+                elif(occupancyGridMatFin[gi+4][gj]==0):
+                    robot2Goal=getcoords([gi+4,gj])
+                elif(occupancyGridMatFin[gi][gj-4]==0):
+                    robot2Goal=getcoords([gi,gj-4])
+                else:
+                    robot2Goal=getcoords([gi,gj+4])
+                #assign second goal to the second cluster
+                robot3Goal=succ[1]
+                gi = int((round(robot3Goal[1],2) - orig_y)/delta)
+                gj = int((round(robot3Goal[0],2) - orig_x)/delta)
+                if (occupancyGridMatFin[gi-4][gj]==0):
+                    robot4Goal=getcoords([gi-4,gj])
+                elif(occupancyGridMatFin[gi+4][gj]==0):
+                    robot4Goal=getcoords([gi+4,gj])
+                elif(occupancyGridMatFin[gi][gj-4]==0):
+                    robot4Goal=getcoords([gi,gj-4])
+                else:
+                    robot4Goal=getcoords([gi,gj+4])
+                sendGoalRectilinear(robot1Goal,"robot1")
+                sendGoalRectilinear(robot2Goal,"robot2")
+                sendGoalRectilinear(robot3Goal,"robot3")
+                sendGoalRectilinear(robot4Goal,"robot4")
+                #check if robots reached the goals
+                cluster1Status="both"
+                cluster2Status="both"
+                cluster3Status="both"
+                cluster4Status="both"
+                checkStatus(robot1Goal,robot2Goal,robot3Goal,robot4Goal)
+            else:
+                if(robot1 =="robot1"):
+                    robot1Goal=succ[0]
+                    robot1Stack.append(node_in_tree)
+                    cluster1Status="robot1"
+                    #visited_nodes.append(robot1Goal)
+                    sendGoalRectilinear(robot1Goal,"robot1")
+                elif(robot2=="robot2"):
+                    robot2Goal=succ[0]
+                    robot2Stack.append(node_in_tree)
+                    cluster2Status="robot2"
+                    #visited_nodes.append(robot2Goal)
+                    sendGoalRectilinear(robot2Goal,"robot2")
+                elif(robot3=="robot3"):
+                    robot3Goal=succ[0]
+                    robot3Stack.append(node_in_tree)
+                    cluster3Status="robot3"
+                    #visited_nodes.append(robot2Goal)
+                    sendGoalRectilinear(robot3Goal,"robot3")
+                elif(robot4=="robot4"):
+                    robot4Goal=succ[0]
+                    robot4Stack.append(node_in_tree)
+                    cluster4Status="robot4"
+                    #visited_nodes.append(robot2Goal)
+                    sendGoalRectilinear(robot2Goal,"robot4")             
+        elif(robot1=="both"):
+            print("robot 1 and 2")
+            if(len(succ)==1):
+                    #Single goal: all robots go to the same node
+                    robot1Stack.append(node_in_tree)
+                    robot2Stack.append(node_in_tree)
+                    # adding goals
+                    robot1Goal=succ[0]
+                    gi = int((round(robot1Goal[1],2) - orig_y)/delta)
+                    gj = int((round(robot1Goal[0],2) - orig_x)/delta)
+                    f.append([gi,gj])
+                    if (occupancyGridMatFin[gi-4][gj]==0):
+                        robot2Goal=getcoords([gi-4,gj])
+                    elif(occupancyGridMatFin[gi+4][gj]==0):
+                        robot2Goal=getcoords([gi+4,gj])
+                    elif(occupancyGridMatFin[gi][gj-4]==0):
+                        robot2Goal=getcoords([gi,gj-4])
+                    else:
+                        robot2Goal=getcoords([gi,gj+4])
+                    #send goals to each robot
+                    sendGoalRectilinear(robot1Goal,"robot1")
+                    sendGoalRectilinear(robot2Goal,"robot2")
+                    cluster1Status="both"
+                    cluster2Status="both"
+                    #check if robots reached the goals
+                    checkStatus(robot1Goal,robot2Goal,robot3Goal,robot4Goal)
+            else:
+                robot1Stack.append(node_in_tree)
+                robot2Stack.append(node_in_tree)
                 robot1Goal=succ[0]
                 robot2Goal=succ[1]
-            sendGoalRectilinear(robot1Goal,"robot1")
-            sendGoalRectilinear(robot2Goal,"robot2")
-        else:
-            if(robot2 is None):
-                robot1Goal=succ[0]
-                robot1Stack.append(node_in_tree)
-                visited_nodes.append(robot1Goal)
                 sendGoalRectilinear(robot1Goal,"robot1")
-            else:
-                robot2Goal=succ[0]
-                robot2Stack.append(node_in_tree)
-                visited_nodes.append(robot2Goal)
                 sendGoalRectilinear(robot2Goal,"robot2")
+                cluster1Status="robot1"
+                cluster2Status="robot2"
+                #check if robots reached the goals
+                checkStatus(robot1Goal,robot2Goal,robot3Goal,robot4Goal)
+        elif(robot3=="both"):
+            print("robot 3 and 4")
+            if(len(succ)==1):
+                    #Single goal: all robots go to the same node
+                    robot3Stack.append(node_in_tree)
+                    robot4Stack.append(node_in_tree)
+                    # adding goals
+                    robot3Goal=succ[0]
+                    gi = int((round(robot3Goal[1],2) - orig_y)/delta)
+                    gj = int((round(robot3Goal[0],2) - orig_x)/delta)
+                    if (occupancyGridMatFin[gi-4][gj]==0):
+                        robot4Goal=getcoords([gi-4,gj])
+                    elif(occupancyGridMatFin[gi+4][gj]==0):
+                        robot4Goal=getcoords([gi+4,gj])
+                    elif(occupancyGridMatFin[gi][gj-4]==0):
+                        robot4Goal=getcoords([gi,gj-4])
+                    else:
+                        robot4Goal=getcoords([gi,gj+4])
+                    #send goals to each robot
+                    cluster3Status="both"
+                    cluster4Status="both"
+                    sendGoalRectilinear(robot3Goal,"robot3")
+                    sendGoalRectilinear(robot4Goal,"robot4")
+                    #check if robots reached the goals
+                    checkStatus(robot1Goal,robot2Goal,robot3Goal,robot4Goal)
+            else:
+                robot3Stack.append(node_in_tree)
+                robot4Stack.append(node_in_tree)
+                robot3Goal=succ[0]
+                robot4Goal=succ[1]
+                sendGoalRectilinear(robot3Goal,"robot3")
+                sendGoalRectilinear(robot4Goal,"robot4")
+                cluster3Status="robot3"
+                cluster4Status="robot4"
+                #check if robots reached the goals
+                checkStatus(robot1Goal,robot2Goal,robot3Goal,robot4Goal)
+        elif(robot1=="robot1"):
+            #Single goal: single goal
+            robot1Stack.append(node_in_tree)
+            # adding goals
+            robot1Goal=succ[0]
+            #send goals to each robot
+            cluster1Status="robot1"
+            sendGoalRectilinear(robot1Goal,"robot1")
+            #check if robots reached the goals
+            checkStatus(robot1Goal,robot2Goal,robot3Goal,robot4Goal)
+        elif(robot2=="robot2"):
+            #Single goal: single goal
+            robot2Stack.append(node_in_tree)
+            # adding goals
+            robot2Goal=succ[0]
+            #send goals to each robot
+            cluster2Status="robot2"
+            sendGoalRectilinear(robot2Goal,"robot2")
+            #check if robots reached the goals
+            checkStatus(robot1Goal,robot2Goal,robot3Goal,robot4Goal)
+        elif(robot3=="robot3"):
+            #Single goal: single goal
+            robot3Stack.append(node_in_tree)
+            # adding goals
+            robot3Goal=succ[0]
+            #send goals to each robot
+            cluster3Status="robot3"
+            sendGoalRectilinear(robot3Goal,"robot3")
+            #check if robots reached the goals
+            checkStatus(robot1Goal,robot2Goal,robot3Goal,robot4Goal)
+        elif(robot4=="robot4"):
+            #Single goal: single goal
+            robot4Stack.append(node_in_tree)
+            # adding goals
+            robot4Goal=succ[0]
+            #send goals to each robot
+            cluster4Status="robot4"
+            sendGoalRectilinear(robot4Goal,"robot4")
+            #check if robots reached the goals
+            checkStatus(robot1Goal,robot2Goal,robot3Goal,robot4Goal)
     else:
-        if(robot2 is None):
+        if(robot1 =="robot1" or robot1 =="both"):
             if(len(robot1Stack)>2):
                 prevNode=robot1Stack.pop()
                 popStackRobot1(prevNode)
@@ -565,12 +794,14 @@ def callback(data,curr_root,robot1=None,robot2=None):
                             print("unvisited node from other tree")
                             print(g)
                             robot1Goal=g
-                            visited_nodes.append(robot1Goal)
+                            #visited_nodes.append(robot1Goal)
+                            #cluster1Status="robot1"
                             sendGoalRectilinear(robot1Goal,"robot1")
+                            checkStatus(robot1Goal,robot2Goal,robot3Goal,robot4Goal)
                 else:
                     checkForCompletion(curr_root,robot1)
                     explorationcomplete()
-        else:
+        elif(robot2=="robot2"):
             if(len(robot2Stack)>2):
                 n=robot2Stack.pop()
                 popStackRobot2(n)
@@ -580,13 +811,51 @@ def callback(data,curr_root,robot1=None,robot2=None):
                         if(g not in visited_nodes):
                             print("unvisited node from other tree")
                             print(g)
-                            robot1Goal=g
-                            visited_nodes.append(robot1Goal)
-                            sendGoalRectilinear(robot1Goal,"robot1")
+                            robot2Goal=g
+                            #visited_nodes.append(robot1Goal)
+                            #cluster2Status="robot2"
+                            sendGoalRectilinear(robot2Goal,"robot2")
+                            checkStatus(robot1Goal,robot2Goal,robot3Goal,robot4Goal)
                 else:
                     checkForCompletion(curr_root,robot2)
                     explorationcomplete()
-    checkStatus(robot1Goal,robot2Goal)
+        elif(robot3=="robot3" or robot3=="both"):
+            if(len(robot3Stack)>2):
+                n=robot3Stack.pop()
+                popStackRobot3(n)
+            else:
+                if(len(visited_nodes)!=len(global_goals)):
+                    for g in global_goals:
+                        if(g not in visited_nodes):
+                            print("unvisited node from other tree")
+                            print(g)
+                            robot3Goal=g
+                            #visited_nodes.append(robot1Goal)
+                            #cluster3Status="robot3"
+                            sendGoalRectilinear(robot3Goal,"robot3")
+                            checkStatus(robot1Goal,robot2Goal,robot3Goal,robot4Goal)
+                else:
+                    checkForCompletion(curr_root,robot3)
+                    explorationcomplete()
+        elif(robot4=="robot4"):
+            if(len(robot4Stack)>2):
+                n=robot4Stack.pop()
+                popStackRobot4(n)
+            else:
+                if(len(visited_nodes)!=len(global_goals)):
+                    for g in global_goals:
+                        if(g not in visited_nodes):
+                            print("unvisited node from other tree")
+                            print(g)
+                            robot4Goal=g
+                            #visited_nodes.append(robot1Goal)
+                            #cluster4Status="robot4"
+                            sendGoalRectilinear(robot4Goal,"robot4")
+                            checkStatus(robot1Goal,robot2Goal,robot3Goal,robot4Goal)
+                else:
+                    checkForCompletion(curr_root,robot4)
+                    explorationcomplete()
+    checkStatus(robot1Goal,robot2Goal,robot3Goal,robot4Goal)
 
 
 
@@ -595,6 +864,8 @@ def popStackRobot1(prevNode):
     global visited_nodes
     global robot1Goal
     global robot2Goal
+    global robot3Goal
+    global robot4Goal
     print("leaf popping")
     print("robot1")
     r=prevNode.keys()
@@ -604,29 +875,94 @@ def popStackRobot1(prevNode):
     prevGoalList=prevNode[root]
     if(prevGoalList):
         for prevGoal in prevGoalList:
-            if(prevGoal not in visited_nodes):
+            if(prevGoal not in visited_nodes and prevGoal!=robot2Goal and prevGoal!=robot3Goal and prevGoal!=robot4Goal):
                 print("got a previous goal")
-                visited_nodes.append(prevGoal)
-                sendGoalRectilinear(prevGoal,"robot1")
-                checkStatus(robot1Goal,robot2Goal)
+                print(prevGoal)
+                robot1Goal=prevGoal
+                if(cluster1Status=="robot1"):
+                        sendGoalRectilinear(robot1Goal,"robot1")
+                else:
+                    gi,gj=getindices([robot1Goal])
+                    if (occupancyGridMatFin[gi-4][gj]==0):
+                        robot2Goal=getcoords([gi-4,gj])
+                    elif(occupancyGridMatFin[gi+4][gj]==0):
+                        robot2Goal=getcoords([gi+4,gj])
+                    elif(occupancyGridMatFin[gi][gj-4]==0):
+                        robot2Goal=getcoords([gi,gj-4])
+                    else:
+                        robot2Goal=getcoords([gi,gj+4])
+                    sendGoalRectilinear(robot1Goal,"robot1")
+                    sendGoalRectilinear(robot2Goal,"robot2")
+                checkStatus(robot1Goal,robot2Goal,robot3Goal,robot4Goal)
+    goals_to_check=[]
     if(len(robot1Stack)>2):
         n=robot1Stack.pop()
         popStackRobot1(n)
     else:
         if(len(visited_nodes)!=len(global_goals)):
-            for g in global_goals:
+            for k in robot2Stack:
+                if(type(k) is dict):
+                    r=k.keys()
+                    root=r[0]
+                    list_from_cluster=k[root]
+                    for g in list_from_cluster:
+                        if(g not in visited_nodes):
+                            print("topmost unvisited node")
+                            print(g)
+                            goals_to_check.append(g)
+                            if(g!=robot2Goal):
+                                robot1Goal=g
+                                sendGoalRectilinear(robot1Goal,"robot1")
+                                checkStatus(robot1Goal,robot2Goal,robot3Goal,robot4Goal)
+            for g in goals_to_check:
                 if(g not in visited_nodes):
-                    print("unvisited node from other tree")
+                    print("topmost unvisited node")
                     print(g)
                     robot1Goal=g
-                    visited_nodes.append(robot1Goal)
-                    sendGoalRectilinear(robot1Goal,"robot1")
-                    checkStatus(robot1Goal,robot2Goal)
+                    if(cluster1Status=="robot1"):
+                        sendGoalRectilinear(robot1Goal,"robot1")
+                    else:
+                        gi,gj=getindices([robot1Goal])
+                        if (occupancyGridMatFin[gi-4][gj]==0):
+                            robot2Goal=getcoords([gi-4,gj])
+                        elif(occupancyGridMatFin[gi+4][gj]==0):
+                            robot2Goal=getcoords([gi+4,gj])
+                        elif(occupancyGridMatFin[gi][gj-4]==0):
+                            robot2Goal=getcoords([gi,gj-4])
+                        else:
+                            robot2Goal=getcoords([gi,gj+4])
+                        sendGoalRectilinear(robot1Goal,"robot1")
+                        sendGoalRectilinear(robot2Goal,"robot2")
+                    checkStatus(robot1Goal,robot2Goal,robot3Goal,robot4Goal)
+
+            for g in global_goals:
+                if(g not in visited_nodes):
+                    print("topmost unvisited node from other tree")
+                    print(g)
+                    robot1Goal=g
+                    #visited_nodes.append(robot1Goal)
+                    if(cluster1Status=="robot1"):
+                        sendGoalRectilinear(robot1Goal,"robot1")
+                    else:
+                        gi,gj=getindices([robot1Goal])
+                        if (occupancyGridMatFin[gi-4][gj]==0):
+                            robot2Goal=getcoords([gi-4,gj])
+                        elif(occupancyGridMatFin[gi+4][gj]==0):
+                            robot2Goal=getcoords([gi+4,gj])
+                        elif(occupancyGridMatFin[gi][gj-4]==0):
+                            robot2Goal=getcoords([gi,gj-4])
+                        else:
+                            robot2Goal=getcoords([gi,gj+4])
+                        sendGoalRectilinear(robot1Goal,"robot1")
+                        sendGoalRectilinear(robot2Goal,"robot2")
+                    checkStatus(robot1Goal,robot2Goal,robot3Goal,robot4Goal)
 
 def popStackRobot2(prevNode):
     global robot2Stack
     global robot1Goal
     global robot2Goal
+    global robot3Goal
+    global robot4Goal
     global visited_nodes
     print("leaf popping")
     print("robot2")
@@ -637,25 +973,210 @@ def popStackRobot2(prevNode):
     prevGoalList=prevNode[root]
     if(prevGoalList):
         for prevGoal in prevGoalList:
-            if(prevGoal not in visited_nodes):
+            if(prevGoal not in visited_nodes and prevGoal!=robot1Goal and prevGoal!=robot3Goal and prevGoal!=robot4Goal):
                 print("got a previous goal")
-                visited_nodes.append(prevGoal)
+                print(prevGoal)
+                #visited_nodes.append(prevGoal)
                 robot2Goal=prevGoal
                 sendGoalRectilinear(prevGoal,"robot2")
-                checkStatus(robot1Goal,robot2Goal)
+                checkStatus(robot1Goal,robot2Goal,robot3Goal,robot4Goal)
+    goals_to_check=[]
     if(len(robot2Stack)>2):
         n=robot2Stack.pop()
         popStackRobot2(n)
     else:
         if(len(visited_nodes)!=len(global_goals)):
-            for g in global_goals:
+            for k in robot1Stack:
+                print(k)
+                if(type(k) is dict):
+                    r=k.keys()
+                    root=r[0]
+                    list_from_cluster=k[root]
+                    for g in list_from_cluster:
+                        if(g not in visited_nodes):
+                            print("topmost unvisited node")
+                            print(g)
+                            goals_to_check.append(g)
+                            if(g!=robot1Goal):
+                                robot2Goal=g
+                                sendGoalRectilinear(robot2Goal,"robot2")
+                                checkStatus(robot1Goal,robot2Goal,robot3Goal,robot4Goal)
+            for g in goals_to_check:
                 if(g not in visited_nodes):
-                    print("unvisited node from other tree")
+                    print("topmost unvisited node")
                     print(g)
                     robot2Goal=g
-                    visited_nodes.append(robot2Goal)
                     sendGoalRectilinear(robot2Goal,"robot2")
-                    checkStatus(robot1Goal,robot2Goal)
+                    checkStatus(robot1Goal,robot2Goal,robot3Goal,robot4Goal)
+
+            for g in global_goals:
+                if(g not in visited_nodes):
+                    print("topmost unvisited node from other tree")
+                    print(g)
+                    robot2Goal=g
+                    #visited_nodes.append(robot1Goal)
+                    sendGoalRectilinear(robot2Goal,"robot2")
+                    checkStatus(robot1Goal,robot2Goal,robot3Goal,robot4Goal)
+
+def popStackRobot3(prevNode):
+    global robot3Stack
+    global robot1Goal
+    global robot2Goal
+    global robot3Goal
+    global robot4Goal
+    global visited_nodes
+    global cluster3Status
+    print("leaf popping")
+    print("robot3")
+    r=prevNode.keys()
+    root=r[0]
+    print("current root")
+    print(root)
+    prevGoalList=prevNode[root]
+    if(prevGoalList):
+        for prevGoal in prevGoalList:
+            if(prevGoal not in visited_nodes and prevGoal!=robot1Goal and prevGoal!=robot2Goal and prevGoal!=robot4Goal):
+                print("got a previous goal")
+                print(prevGoal)
+                #visited_nodes.append(prevGoal)
+                robot3Goal=prevGoal
+                if(cluster3Status=="robot3"):
+                    sendGoalRectilinear(prevGoal,"robot3")
+                else:
+                    gi,gj=getindices([prevGoal])
+                    if (occupancyGridMatFin[gi-4][gj]==0):
+                        robot4Goal=getcoords([gi-4,gj])
+                    elif(occupancyGridMatFin[gi+4][gj]==0):
+                        robot4Goal=getcoords([gi+4,gj])
+                    elif(occupancyGridMatFin[gi][gj-4]==0):
+                        robot4Goal=getcoords([gi,gj-4])
+                    else:
+                        robot4Goal=getcoords([gi,gj+4])
+                    sendGoalRectilinear(robot3Goal,"robot3")
+                    sendGoalRectilinear(robot4Goal,"robot4")
+                checkStatus(robot1Goal,robot2Goal,robot3Goal,robot4Goal)
+    goals_to_check=[]
+    if(len(robot3Stack)>2):
+        n=robot3Stack.pop()
+        popStackRobot3(n)
+    else:
+        if(len(visited_nodes)!=len(global_goals)):
+            for k in robot4Stack:
+                print(k)
+                if(type(k) is dict):
+                    r=k.keys()
+                    root=r[0]
+                    list_from_cluster=k[root]
+                    for g in list_from_cluster:
+                        if(g not in visited_nodes):
+                            print("topmost unvisited node")
+                            print(g)
+                            goals_to_check.append(g)
+                            if(g!=robot4Goal):
+                                robot3Goal=g
+                                sendGoalRectilinear(robot3Goal,"robot3")
+                                checkStatus(robot1Goal,robot2Goal,robot3Goal,robot4Goal)
+            for g in goals_to_check:
+                if(g not in visited_nodes):
+                    print("topmost unvisited node")
+                    print(g)
+                    robot3Goal=g
+                    if(cluster3Status=="robot3"):
+                        sendGoalRectilinear(robot3Goal,"robot3")
+                    else:
+                        gi,gj=getindices([robot3Goal])
+                        if (occupancyGridMatFin[gi-4][gj]==0):
+                            robot4Goal=getcoords([gi-4,gj])
+                        elif(occupancyGridMatFin[gi+4][gj]==0):
+                            robot4Goal=getcoords([gi+4,gj])
+                        elif(occupancyGridMatFin[gi][gj-4]==0):
+                            robot4Goal=getcoords([gi,gj-4])
+                        else:
+                            robot4Goal=getcoords([gi,gj+4])
+                        sendGoalRectilinear(robot3Goal,"robot3")
+                        sendGoalRectilinear(robot4Goal,"robot4")
+                    checkStatus(robot1Goal,robot2Goal,robot3Goal,robot4Goal)
+            for g in global_goals:
+                if(g not in visited_nodes):
+                    print("topmost unvisited node from other tree")
+                    print(g)
+                    robot3Goal=g
+                    #visited_nodes.append(robot1Goal)
+                    if(cluster3Status=="robot3"):
+                        sendGoalRectilinear(robot3Goal,"robot3")
+                    else:
+                        gi,gj=getindices([robot3Goal])
+                        if (occupancyGridMatFin[gi-4][gj]==0):
+                            robot4Goal=getcoords([gi-4,gj])
+                        elif(occupancyGridMatFin[gi+4][gj]==0):
+                            robot4Goal=getcoords([gi+4,gj])
+                        elif(occupancyGridMatFin[gi][gj-4]==0):
+                            robot4Goal=getcoords([gi,gj-4])
+                        else:
+                            robot4Goal=getcoords([gi,gj+4])
+                        sendGoalRectilinear(robot3Goal,"robot3")
+                        sendGoalRectilinear(robot4Goal,"robot4")
+                    checkStatus(robot1Goal,robot2Goal,robot3Goal,robot4Goal)
+
+def popStackRobot4(prevNode):
+    global robot4Stack
+    global robot1Goal
+    global robot2Goal
+    global robot3Goal
+    global robot4Goal
+    global visited_nodes
+    print("leaf popping")
+    print("robot4")
+    r=prevNode.keys()
+    root=r[0]
+    print("current root")
+    print(root)
+    prevGoalList=prevNode[root]
+    if(prevGoalList):
+        for prevGoal in prevGoalList:
+            if(prevGoal not in visited_nodes and prevGoal!=robot1Goal and prevGoal!=robot2Goal and prevGoal!=robot3Goal):
+                print("got a previous goal")
+                print(prevGoal)
+                #visited_nodes.append(prevGoal)
+                robot4Goal=prevGoal
+                sendGoalRectilinear(prevGoal,"robot4")
+                checkStatus(robot1Goal,robot2Goal,robot3Goal,robot4Goal)
+    goals_to_check=[]
+    if(len(robot4Stack)>2):
+        n=robot4Stack.pop()
+        popStackRobot4(n)
+    else:
+        if(len(visited_nodes)!=len(global_goals)):
+            for k in robot3Stack:
+                print(k)
+                if(type(k) is dict):
+                    r=k.keys()
+                    root=r[0]
+                    list_from_cluster=k[root]
+                    for g in list_from_cluster:
+                        if(g not in visited_nodes):
+                            print("topmost unvisited node")
+                            print(g)
+                            goals_to_check.append(g)
+                            if(g!=robot3Goal):
+                                robot4Goal=g
+                                sendGoalRectilinear(robot4Goal,"robot4")
+                                checkStatus(robot1Goal,robot2Goal,robot3Goal,robot4Goal)
+            for g in goals_to_check:
+                if(g not in visited_nodes):
+                    print("topmost unvisited node")
+                    print(g)
+                    robot4Goal=g
+                    sendGoalRectilinear(robot4Goal,"robot4")
+                    checkStatus(robot1Goal,robot2Goal,robot3Goal,robot4Goal)
+            for g in global_goals:
+                if(g not in visited_nodes):
+                    print("topmost unvisited node from other tree")
+                    print(g)
+                    robot1Goal=g
+                    #visited_nodes.append(robot1Goal)
+                    sendGoalRectilinear(robot4Goal,"robot4")
+                    checkStatus(robot1Goal,robot2Goal,robot3Goal,robot4Goal)
 
 def checkForCompletion(curr_root,robotName):
     successStatus="status: 3"
@@ -676,52 +1197,182 @@ def checkForCompletion(curr_root,robotName):
         else:
             checkForCompletion(curr_root,robotName)
 
-def checkStatus(tup_goal1, tup_goal2):
+def checkStatus(tup_goal1, tup_goal2,tup_goal3, tup_goal4):
 
     global prevStatus1
     global prevStatus2
+    global robot1Stack
+    global robot2Stack
+    global prevStatus3
+    global prevStatus4
+    global robot3Stack
+    global robot4Stack
+    global cluster1Status
+    global cluster2Status
+    global cluster3Status
+    global cluster4Status
+    global visited_nodes
+    global Status1Checker
+    global Status2Checker
+    global Status3Checker
+    global Status4Checker
+
+    print(cluster1Status)
+    #print(prevStatus1)
+    successStatus="status: 3"
+    acceptedStatus="status: 1"
     status1 = rospy.wait_for_message("/robot1/move_base/status", GoalStatusArray)
     l1=status1.status_list
     statuslength1=len(l1)
     if(statuslength1>0):
         statusString=str(l1[0])
-        if(statusString==prevStatus1):
+        if(prevStatus1 in statusString and prevStatus1!="" and Status1Checker<5):
+            if(prevStatus1=="status: 3"):
+                Status1Checker+=1
+            else:
+                Status1Checker=0 
             print("same status : continue checking")
         else:
-            prevStatus1=statusString
+            Status1Checker=0
             successStatus="status: 3"
             abortedStatus="status: 4"
             if successStatus in statusString:
+                prevStatus1=successStatus
                 print("reached goal : going to call callback with this root")
                 print(tup_goal1)
                 msg = rospy.wait_for_message("/projected_map", OccupancyGrid)
-                callback(msg,tup_goal1,robot1="robot1",robot2=None)
-            elif(abortedStatus in statusString):
-                msg = rospy.wait_for_message("/projected_map", OccupancyGrid)
-                tup_goal1 = robot1Stack.pop()
-                callback(msg,tup_goal1,robot1="robot1",robot2=None)
+                if(cluster1Status=="all"):
+                    visited_nodes.append(tup_goal1)
+                    prevStatus2=successStatus
+                    prevStatus3=successStatus
+                    prevStatus4=successStatus
+                    callback(msg,tup_goal1,robot1="all",robot2="all",robot3="all",robot4="all")
+                elif(cluster1Status=="both"):
+                    visited_nodes.append(tup_goal1)
+                    prevStatus2=successStatus
+                    callback(msg,tup_goal1,robot1="both",robot2="both",robot3=None,robot4=None)
+                else:
+                    visited_nodes.append(tup_goal1)
+                    callback(msg,tup_goal1,robot1="robot1",robot2=None,robot3=None,robot4=None)
+            elif(acceptedStatus in statusString):
+                prevStatus1=acceptedStatus
+    print(cluster2Status)
+    #print(prevStatus2)
     status2 = rospy.wait_for_message("/robot2/move_base/status", GoalStatusArray)
     l2=status2.status_list
     statuslength2=len(l2)
     if(statuslength2>0):
         statusString=str(l2[0])
-        if(statusString==prevStatus2):
+        print(statusString)
+        if(prevStatus2 in statusString and prevStatus2!="" and Status2Checker<5):
+
+            if(prevStatus2=="status: 3"):
+                Status2Checker+=1
+            else:
+                Status2Checker=0
             print("same status : continue checking")
         else:
-            prevStatus2=statusString
+            Status2Checker=0
             successStatus="status: 3"
-            abortedStatus="status: 4"
+            abortedStatus="status: 2"
             if successStatus in statusString:
-                msg = rospy.wait_for_message("/projected_map", OccupancyGrid)
+                prevStatus2=successStatus
+                #visited_nodes.append(tup_goal2)
                 print("reached goal: going to call callback with this root")
                 print(tup_goal2)
-                callback(msg,tup_goal2,robot1=None,robot2="robot2")
-            elif(abortedStatus in statusString):
                 msg = rospy.wait_for_message("/projected_map", OccupancyGrid)
-                tup_goal2 = robot2Stack.pop()
-                callback(msg,tup_goal2,robot1=None,robot2="robot2")
+                
+                if(cluster2Status=="all"):
+                    visited_nodes.append(tup_goal1)
+                    prevStatus1=successStatus
+                    prevStatus3=successStatus
+                    prevStatus4=successStatus
+                    callback(msg,tup_goal1,robot1="all",robot2="all",robot3="all",robot4="all")
+                elif(cluster2Status=="both"):
+                    visited_nodes.append(tup_goal1)
+                    prevStatus1=successStatus
+                    callback(msg,tup_goal1,robot1="both",robot2="both",robot3=None,robot4=None)
+                else:
+                    visited_nodes.append(tup_goal2)
+                    callback(msg,tup_goal2,robot1=None,robot2="robot2",robot3=None,robot4=None)
+            elif(acceptedStatus in statusString):
+                prevStatus2=acceptedStatus
+    print(cluster3Status)
+    #print(prevStatus3)
+    status3 = rospy.wait_for_message("/robot3/move_base/status", GoalStatusArray)
+    l3=status3.status_list
+    statuslength3=len(l3)
+    if(statuslength3>0):
+        statusString=str(l3[0])
+        #print(statusString)
+        if(prevStatus3 in statusString and prevStatus3!="" and Status3Checker<5):  
+            if(prevStatus3=="status: 3"):
+                Status3Checker+=1
+            else:
+                Status3Checker=0
+            print("same status : continue checking")
+        else:
+            if successStatus in statusString:
+                prevStatus3=successStatus
+                #visited_nodes.append(tup_goal3)
+                print("reached goal: going to call callback with this root")
+                print(tup_goal3)
+                msg = rospy.wait_for_message("/projected_map", OccupancyGrid)
+                
+                if(cluster3Status=="all"):
+                    visited_nodes.append(tup_goal1)
+                    prevStatus1=successStatus
+                    prevStatus2=successStatus
+                    prevStatus4=successStatus
+                    callback(msg,tup_goal1,robot1="all",robot2="all",robot3="all",robot4="all")
+                elif(cluster3Status=="both"):
+                    visited_nodes.append(tup_goal3)
+                    prevStatus4=successStatus
+                    callback(msg,tup_goal3,robot1=None,robot2=None,robot3="both",robot4="both")
+                else:
+                    visited_nodes.append(tup_goal3)
+                    callback(msg,tup_goal3,robot1=None,robot2=None,robot3="robot3",robot4=None)
+            elif(acceptedStatus in statusString):
+                prevStatus3=acceptedStatus
+    print(cluster4Status)
+    #print(prevStatus4)
+    status4 = rospy.wait_for_message("/robot4/move_base/status", GoalStatusArray)
+    l4=status4.status_list
+    statuslength4=len(l4)
+    if(statuslength4>0):
+        statusString=str(l4[0])
+        if(prevStatus4 in statusString and prevStatus4!="" and Status4Checker<5):
+            if(prevStatus4=="status: 3"):
+                Status4Checker+=1
+            else:
+                Status4Checker=0   
+            print("same status : continue checking")
+        else:
+            Status4Checker=0
+            if successStatus in statusString:
+                prevStatus4=successStatus
+                #visited_nodes.append(tup_goal4)
+                print("reached goal: going to call callback with this root")
+                print(tup_goal4)
+                msg = rospy.wait_for_message("/projected_map", OccupancyGrid)
+                
+                if(cluster4Status=="all"):
+                    visited_nodes.append(tup_goal1)
+                    prevStatus1=successStatus
+                    prevStatus2=successStatus
+                    prevStatus3=successStatus
+                    callback(msg,tup_goal1,robot1="all",robot2="all",robot3="all",robot4="all")
+                elif(cluster4Status=="both"):
+                    visited_nodes.append(tup_goal3)
+                    prevStatus3=successStatus
+                    callback(msg,tup_goal3,robot1=None,robot2=None,robot3="both",robot4="both")
+                else:
+                    visited_nodes.append(tup_goal4)
+                    callback(msg,tup_goal4,robot1=None,robot2=None,robot3=None,robot4="robot4")
+            elif(acceptedStatus in statusString):
+                prevStatus4=acceptedStatus
     rospy.sleep(2.0)
-    checkStatus(tup_goal1,tup_goal2)
+    checkStatus(tup_goal1,tup_goal2,tup_goal3,tup_goal4)
 def getLevel(d1,lev):
     global G
     d=G.predecessors(d1)
@@ -862,6 +1513,7 @@ def publishFrontiers(frontier):
 def sendGoalRectilinear(tup_goal,robotName):
     global G
     print("in goal")
+    print(tup_goal)
     print(robotName)
     delta=0.25
     goal_states = ['PENDING', 'ACTIVE', 'PREEMPTED', 
@@ -885,28 +1537,7 @@ def sendGoalRectilinear(tup_goal,robotName):
     goal.target_pose.header.stamp = rospy.Time.now()
     rospy.loginfo("Goal Set!")
     move_base.send_goal(goal)
-    #finished_within_time = move_base.wait_for_result(rospy.Duration(60)) 
-    # if not finished_within_time:
-    #     move_base.cancel_goal()
-    #     rospy.loginfo("Timed out achieving goal")
-    #     scan(tup_next_root)
-    # else:
-    #     state = move_base.get_state()
-    #     if state == GoalStatus.SUCCEEDED:
-    #         rospy.loginfo("Goal succeeded!")
-    #         rotateInPlace()
-    #         current_pose=get_pose(robotName)
-    #         pose_x=current_pose.position.x
-    #         pose_y=current_pose.position.y
-    #         pose_i = int((round(pose_y,3)/delta - orig_y))
-    #         pose_j = int((round(pose_x,3)/delta - orig_x))
-    #         #tup_goal=(pose_i,pose_j)
-    #         #G.add_node(tup_goal)
-    #         #G.add_edge(tup_pose,tup_goal)
-    #         scan(tup_next_root)
-    #     else:
-    #         rospy.loginfo("Goal failed with error code: " + str(goal_states[state]))
-    #         scan()
+
 def sendGoal(x,y,frontier,prev_pose,robotName):
     global stack
     goal_states = ['PENDING', 'ACTIVE', 'PREEMPTED', 
@@ -984,36 +1615,6 @@ def explorationcomplete():
     print("Number of nodes  :  %s " % no_nodes)
     print("Exploration Complete")
     sys.exit()
-    #else:
-    #   prev_root=root.pop()
-    #   prev_pos=stack.pop()
-    #   print(len(stack))
-    #   goal=prev_pos
-    #   goal_x = goal.position.x
-    #   goal_y = goal.position.y
-    #   PrevPos(goal_x,goal_y)
-# def getFrontiers(data):
-#   linked=[]
-#   labels=  np.zeros((length, length))
-#   for i in range(0, length):
-#       for j in range(0, length):
-#           if data[i][j] in frontiers:
-#               neighbors
-
-class Node(object):
-    def __init__(self, data):
-        self.data = data
-        self.children = []
-
-    def add_child(self, obj):
-        self.children.append(obj)
-
-    def has_children(self):
-        if (self.children):
-            return True
-        return False
-
-
 
 def PrevPos(goal_x,goal_y):
     print("prev pose called")
@@ -1045,6 +1646,16 @@ def getcoords(frontier):
     y= orig_y + (i * delta)
     return(x, y)
 
+def getindices(frontier):
+    global orig_x
+    global orig_y
+    delta=0.25
+    x= frontier[0]
+    y= frontier[1]
+    j = (x - orig_x)/delta
+    i = (y - orig_y)/delta
+    return(i, j)
+
 def scan(curr_root,robotName):
     global robot1Stack
     global robot2Stack
@@ -1060,7 +1671,7 @@ def scan(curr_root,robotName):
     
     print(robot_pose)
 
-    callback(msg,curr_root,robotName,"robot2")
+    callback(msg,curr_root,"all","all","all","all")
    
 
 
@@ -1105,38 +1716,19 @@ def rotateInPlace(robotName):
     twist.angular.y = 0  
     twist.angular.z = 0.5
     for i in range(80):
-        #print("here")
         p.publish(twist)
         rospy.sleep(0.1) 
-    #rostopic pub -1 /RosAria/cmd_vel geometry_msgs/Twist '[0.0, 0.0, 0.0]' '[0.0, 0.0, 0.5]'
-    #rospy.spin()
+
     twist = Twist()
     rospy.loginfo("Stopping!")
     p.publish(twist)
-    #rospy.spin()
-
-class node:
-    def __init__( self , parent):
-        self.parent=parent
-
-
 
 if __name__ == '__main__':
     print('Initialized')
     start_time=time.time()
     rospy.init_node('SubscribeOccupancyGrid', anonymous=True)
     insert_origin()
-    #try:
-    #    thread.start_new_thread( rotateInPlace, ("robot1",) )
-    #    thread.start_new_thread( rotateInPlace, ("robot2",) )
-    #except:
-    #   print "Error: unable to start thread"
     #rotateInPlace("robot1")
     #rotateInPlace("robot2")
     global_root=(0,0)
-    #try:
-    #    thread.start_new_thread( scan, (root,"robot1",) )
-    #    thread.start_new_thread( scan, (root,"robot2",) )
-    #except:
-    #    print "Error: unable to start thread"
     scan(global_root,"robot1")
