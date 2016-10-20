@@ -1,0 +1,10 @@
+192.168.1.93    aravindlaptop
+
+192.168.1.94    aravindthinkpad
+
+192.168.1.129    rob
+
+192.168.1.114    klyu
+
+192.168.1.150    john-desktop
+
