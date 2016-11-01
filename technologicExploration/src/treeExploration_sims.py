@@ -156,14 +156,6 @@ def callback(data,curr_root,robotsList):
     print("callback called by ")
     for robot in robotsList:
         print(robot)
-
-
-    print("length of BVs")
-    print(len(global_BVs))
-
-    print("length of goals")
-    print(len(global_goals))
-    edge_length=300
     
     epsilon = 0.5
     frontierCells=[]
@@ -202,9 +194,6 @@ def callback(data,curr_root,robotsList):
     #Getting the matrix coordinates of the robot from the x and y
     pose_i = int((round(pose_y,2) - orig_y)/delta)
     pose_j = int((round(pose_x,2) - orig_x)/delta)
-    print(pose_i)
-    print(pose_j)
-    
     #Populating the frontiers
     scan_area_i= 0
     while (scan_area_i <= height-1):
@@ -267,7 +256,6 @@ def callback(data,curr_root,robotsList):
         if ( (bi+2>=height-2 or bj+2>=width or bi-2<=0 or bj-2<=0)or(occupancyGridMatFin[bi-2][bj] == 100 and occupancyGridMatFin[bi][bj-2] == 100)or (bi-2>=0 and occupancyGridMatFin[bi-2][bj] == 100 and occupancyGridMatFin[bi][bj+2] == 100) or (occupancyGridMatFin[bi+2][bj] == 100 and occupancyGridMatFin[bi][bj-2] == 100) or (occupancyGridMatFin[bi+2][bj] == 100 and occupancyGridMatFin[bi][bj+2] == 100) or (occupancyGridMatFin[bi-1][bj] == 100 and occupancyGridMatFin[bi+1][bj] == 100) or (occupancyGridMatFin[bi][bj-1] == 100 and occupancyGridMatFin[bi][bj+1] == 100) or (occupancyGridMatFin[bi][bj-1] == 100 and occupancyGridMatFin[bi][bj+1] == -1) or (occupancyGridMatFin[bi][bj-1] == -1 and occupancyGridMatFin[bi][bj+1] == 100) or (occupancyGridMatFin[bi-1][bj] == 100 and occupancyGridMatFin[bi+1][bj] == -1) or (occupancyGridMatFin[bi-1][bj] == -1 and occupancyGridMatFin[bi+1][bj] == 100)  or  (([bi,bj+2] in allFrontiers or occupancyGridMatFin[bi][bj+2] == -1) and (occupancyGridMatFin[bi][bj-2] == 100 or occupancyGridMatFin[bi][bj-1] == 100))  or (([bi,bj-2] in allFrontiers or occupancyGridMatFin[bi][bj-2] == -1) and (occupancyGridMatFin[bi][bj+2] == 100 or occupancyGridMatFin[bi][bj+1] == 100 ))  or  (([bi+2,bj] in allFrontiers or occupancyGridMatFin[bi+2][bj] == -1) and (occupancyGridMatFin[bi-2][bj] == 100 or occupancyGridMatFin[bi-1][bj] == 100))  or (([bi-2,bj] in allFrontiers or occupancyGridMatFin[bi-2][bj] == -1) and (occupancyGridMatFin[bi+2][bj] == 100 or occupancyGridMatFin[bi+1][bj] == 100))   ):
             valid = 0
         if (valid==1):
-            print(vbv)
             filter2.append(vbv)
     
     for bv in filter2:
@@ -295,23 +283,18 @@ def callback(data,curr_root,robotsList):
                             remove=0
                     if(remove==1):
                         bx,by=getcoords([bi1,bj1])
-                        #global_BVs.append([bx,by])
                         filter4.remove([bi1,bj1])
                 elif(bi==bi1):
                     lower=min(bj,bj1)
                     lower=lower+5
                     higher=max(bj,bj1)
-                    #print(lower)
-                    #print(higher)
                     remove=1
                     while(lower<higher-5):
                         lower+=1
-                       # print(lower)
                         if(occupancyGridMatFin[bi][lower]==100 or occupancyGridMatFin[bi][lower]==-1):
                             remove=0
                     if(remove==1):
                         bx,by=getcoords([bi1,bj1])
-                        #global_BVs.append([bx,by])
                         filter4.remove([bi1,bj1])
 
     for bv in filter4:
@@ -357,9 +340,6 @@ def callback(data,curr_root,robotsList):
             scan_area_i+=1
         if(checkExisting(bvc,occupancyGridMatFin)):
             if(invalid_counter<3):
-                #global_BVs.append(bvc)
-                print("=================================================================================")
-                print(bv)
                 f.append(bv)
                 counter_to_check=0
                 if(bi>4 and occupancyGridMatFin[bi-4][bj] == 100):
@@ -502,22 +482,16 @@ def callback(data,curr_root,robotsList):
                             G.add_edge(curr_root,goal_tup,length=edge_length)
                             global_BVs.append(bvc)
                             current_BVs.append(bvc)
-
-                #f.extend(frontierLine)
         else:
             print("this node was invalid")
-            #f.append(bv)
 
             
     tup_pose=(pose_i,pose_j)
     closed_list=[]
     node_in_tree={}
-    
-    print(dictBVGoals)
    
     for bear in filter5:
         frontierLine=[]
-        #print(bear)
         dominators=[]
         bv=dictBlockingAngles[bear]
         invalid_goal=0
@@ -525,9 +499,6 @@ def callback(data,curr_root,robotsList):
         bj=bv[1]
         bx,by=getcoords([bi,bj])
         bv_tup=(bx,by)
-        
-        #print(curr_root)
-        print("current")
         if(bv_tup in dictBVGoals and G.has_node(dictBVGoals[bv_tup])):
             posex=pose_x +delta/2
             posey=pose_y +delta/2
@@ -541,8 +512,6 @@ def callback(data,curr_root,robotsList):
                     px,py=getcoords([scan_area_i,scan_area_j])
                     if (((px>bx and px<posex)or (px<bx and px>posex))and((py>by and py<posey)or (py<by and py>posey))):
                         if (abs(py - (a*px+b)) <= epsilon):
-                            #f.append([scan_area_i,scan_area_j])
-                            #print("in frontier line")
                             for blockVert in dictFrontierLines:
                                 if(blockVert!=bear):
                                     if([scan_area_i,scan_area_j] in dictFrontierLines[blockVert]):
@@ -552,29 +521,15 @@ def callback(data,curr_root,robotsList):
                                         print(tupvbv)
                                         if(tupvbv in dictBVGoals and G.has_node(dictBVGoals[tupvbv])):
                                             dominators.append(tupvbv)
-                                            print("dominator")
-                                            print(dictBVGoals[tupvbv])
                     scan_area_j+=1
                 scan_area_i+=1
             max_l=0
             lev=getLevel(dictBVGoals[bv_tup],0)
             for d in dominators:
-                print("checking dominator")
-                print(dictBVGoals[tupvbv])
-                #l=len(G.predecessors(dictBVGoals[d]))
-                l=getLevel(dictBVGoals[d],0)
-                    # if(l==lev):
-                    #     if d in closed_list:
-                    #         max_l=l
-                    #         max_d=d
-                    #         print("this is the dominator")
-                    #         print(max_d)
-                    # else:    
+                l=getLevel(dictBVGoals[d],0)    
                 if (l>max_l):
                     max_l=l
                     max_d=d
-                    print("this is the dominator")
-                    print(max_d)
 
             if(max_l>0):
                 G.remove_node(dictBVGoals[bv_tup])
@@ -582,92 +537,45 @@ def callback(data,curr_root,robotsList):
             else:
                 print("No dominators")
             closed_list.append(bv_tup)
-            #f.append([bi,bj])
-            #publishFrontiers(f)
     
     for frontiercell in allFrontiers:
         
         if(frontiercell in rejectedFrontiers):
             currentFrontier=[]
-            #(frontiercell)
-            #currentFrontier.append(frontiercell)
             currentFrontierCell=frontiercell
-            #f.extend(currentFrontier)
-            #publishFrontiers(f)
-            #print(currentFrontierCell)
 
 
             while(check8neighbours(currentFrontierCell[0],currentFrontierCell[1],allFrontiers) and currentFrontierCell not in currentFrontier):
                 currentFrontier.append(currentFrontierCell)
-                #print("got in")
-                #print(currentFrontier)
-                #print(currentFrontierCell)
                 curri=currentFrontierCell[0]
                 currj=currentFrontierCell[1]
-                processedFrontiers.append(currentFrontierCell)
-                #f.append(currentFrontierCell)
-                #publishFrontiers(f)
+                processedFrontiers.append(currentFrontierCell)(f)
                 if([curri-1,currj-1] in allFrontiers and [curri-1,currj-1] not in currentFrontier and [curri-1,currj-1] not in processedFrontiers):
                     currentFrontierCell=[curri-1,currj-1]
-                    #processedFrontiers.append(currentFrontierCell)
-                    #currentFrontier.append([curri-1,currj-1])
                 elif([curri-1,currj] in allFrontiers and [curri-1,currj] not in currentFrontier and [curri-1,currj] not in processedFrontiers):
                     currentFrontierCell=[curri-1,currj]
-                    #processedFrontiers.append(currentFrontierCell)
-                    #currentFrontier.append([curri-1,currj])
                 elif([curri-1,currj+1] in allFrontiers and [curri-1,currj+1] not in currentFrontier and [curri-1,currj+1] not in processedFrontiers):
                     currentFrontierCell=[curri-1,currj+1]
-                    #processedFrontiers.append(currentFrontierCell)
-                    #currentFrontier.append([curri-1,currj+1])
                 elif([curri,currj-1] in allFrontiers and [curri,currj-1] not in currentFrontier and [curri,currj-1] not in processedFrontiers):
                     currentFrontierCell=[curri,currj-1]
-                    #processedFrontiers.append(currentFrontierCell)
-                    #currentFrontier.append([curri,currj-1])
                 elif([curri,currj+1] in allFrontiers and [curri,currj+1] not in currentFrontier and [curri,currj+1] not in processedFrontiers):
                     currentFrontierCell=[curri,currj+1]
-                    #processedFrontiers.append(currentFrontierCell)
-                    #currentFrontier.append([curri,currj-1])
                 elif([curri+1,currj-1] in allFrontiers and [curri+1,currj-1] not in currentFrontier and [curri+1,currj-1] not in processedFrontiers):
                     currentFrontierCell=[curri+1,currj-1]
-                    #processedFrontiers.append(currentFrontierCell)
-                    #currentFrontier.append([curri+1,currj-1])
                 elif([curri+1,currj] in allFrontiers and [curri+1,currj] not in currentFrontier and [curri+1,currj] not in processedFrontiers):
                     currentFrontierCell=[curri+1,currj]
-                    #processedFrontiers.append(currentFrontierCell)
-                    #currentFrontier.append([curri+1,currj])
                 elif([curri+1,currj+1] in allFrontiers and [curri+1,currj+1] not in currentFrontier and [curri+1,currj+1] not in processedFrontiers):
                     currentFrontierCell=[curri+1,currj+1]
-                    #currentFrontier.append([curri+1,currj+1])
                 else:
-                    #print("whole")
-                    #print(currentFrontier)
-                    #f.extend(currentFrontier)
-                    #print("here")
                     valid=1
                     for gl in currentFrontier:
                         glx,gly=getcoords(gl)
-                        #f.append(gl)
                         if (checkneighbourBVs(gl,current_BVs)):
-                            print("nothing")
-                            #f.append(gl)
                             valid=0
                     if(valid==1):
-                        #print("whole2")
-                        #print(currentFrontier)
-                        #f.extend(currentFrontier)
                         listOfFrontiers.append(currentFrontier)
                     continue
-                    #print(currentFrontierCell)
-                #f.append(currentFrontierCell)
                 processedFrontiers.append(currentFrontierCell)
-                #print(processedFrontiers)
-                #publishFrontiers(f)
-
-    print("length before")
-    print(len(listOfFrontiers))
-
-
-
 
     frontierGoalsIntermediate=[elem for elem in listOfFrontiers if len(elem) > 7] 
     
@@ -678,20 +586,11 @@ def callback(data,curr_root,robotsList):
             if (check15neighboursForOccupied(fr[0],fr[1],occupancyGridMatFin)):
                 si.append(fr)
                 f.append(fr)
-                #publishFrontiers(f)
         frontierGoals.append(si)
 
 
 
-    print("length")
-    print(len(frontierGoals))
-    print(frontierGoals)
-
-
     for front in frontierGoals:
-        print("length of each frontier")
-        print(len(front))
-        #print(frontierGoals)
         if(front):
             goal_front=(front[len(front)/2])
             gi=goal_front[0]
@@ -706,8 +605,6 @@ def callback(data,curr_root,robotsList):
                 goal_cell=[gi,gj-2]
             elif((gj<width-2 and occupancyGridMatFin[gi][gj+2]==0) and [gi,gj+2] not in allFrontiers):
                 goal_cell=[gi,gj+2]
-            #frontier_cell_i=frontier_cell[0]
-            #frontier_cell_j=frontier_cell[1]
             posex=pose_x +delta/2
             posey=pose_y +delta/2
             bx,by=getcoords(goal_cell)
@@ -715,8 +612,6 @@ def callback(data,curr_root,robotsList):
             b = posey - a * posex
             invalid_goal=1
             scan_area_i= 0
-            print("global_counter")
-            print(global_counter)
             if(global_counter>1):
                 while (scan_area_i < height):
                     scan_area_j=0
@@ -724,7 +619,6 @@ def callback(data,curr_root,robotsList):
                         px,py=getcoords([scan_area_i,scan_area_j])
                         if (((px>=bx and px<=posex)or (px<=bx and px>=posex))and((py>=by and py<=posey)or (py<=by and py>=posey))):
                             if (abs(py - (a*px+b)) <= epsilon):
-                                #f.append([scan_area_i,scan_area_j])
                                 if(occupancyGridMatFin[scan_area_i][scan_area_j] ==-1 ):
                                     print("invalid because of unknown cells")
                                     #invalid_goal+=5
@@ -734,16 +628,11 @@ def callback(data,curr_root,robotsList):
             rob=np.array((posex,posey))
             gol=np.array((bx,by))
             dist_gol_to_root=np.linalg.norm(rob-gol)
-            print("dist_gol_to_root")
-            print(dist_gol_to_root)
             if(dist_gol_to_root>4.5 and origin_root>0):
                 invalid_goal+=5
-            print("got here")
             goals.append(goal_cell)
             gx,gy=getcoords(goal_cell)
             goal_tup=(gx,gy)
-            print(goal_tup)
-            print(global_goals)
             if (invalid_goal<5 and checkGoals(gx,gy)):
                 global_goals.append(goal_tup)
                 AG.add_edge(curr_root,goal_tup)
@@ -1156,9 +1045,7 @@ def check15neighboursForOccupied(curri,currj,occupancyGridMatFin):
         scan_area_j= currj-3
         while(scan_area_j <= currj+3): 
             if(scan_area_i>=0 and scan_area_j>=0 and scan_area_j<width and scan_area_i<height):
-                #print("didn't get in")
                 if(occupancyGridMatFin[scan_area_i][scan_area_j]==100):
-                    #print("should be false")
                     return False
             scan_area_j+=1
         scan_area_i+=1
@@ -1191,9 +1078,6 @@ def checkStatus():
                 print(next_root)
                 #rotateInPlace(robot)
                 msg = rospy.wait_for_message("/projected_map", OccupancyGrid)
-                print(robot)
-                print(current_status)
-                print(index_robot)
                 if(current_status==8):
                     callback(msg,next_root,list_of_robots[:])
                 elif(current_status==4):
@@ -1347,9 +1231,7 @@ def checkNearbyFrontieirs(curri,currj,occupancyGridMatFin):
         scan_area_j= currj-5
         while(scan_area_j <= currj+5): 
             if(scan_area_i>=0 and scan_area_j>=0 and scan_area_j<width and scan_area_i<height):
-                #print("didn't get in")
                 if(occupancyGridMatFin[scan_area_i][scan_area_j]==0):
-                    #print("should be false")
                     return False
             scan_area_j+=1
         scan_area_i+=1
