@@ -1474,7 +1474,7 @@ def scan(curr_root,no_of_robs):
 def get_pose(robotName):
     top="/"
     top+=str(robotName)
-    top+="_pose"
+    top+="/pose"
     pose = rospy.wait_for_message(top, Pose)
     return pose
 
