@@ -1,5 +1,5 @@
 # Exploration
 
-https://youtu.be/U8xu-MYMEB4
+https://youtu.be/1evYQWS50DE
 
-[![Video](https://youtu.be/U8xu-MYMEB40.jpg)](https://youtu.be/U8xu-MYMEB4)
+[![Video](https://youtu.be/1evYQWS50DE/0.jpg)](https://youtu.be/1evYQWS50DE)
