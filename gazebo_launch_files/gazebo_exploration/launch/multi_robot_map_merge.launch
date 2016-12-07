@@ -1,0 +1,101 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name="num_of_robots" default="2" />
+<arg name="robot_macs" default="robot_0,00:00:00:00:00:11!robot_1,00:00:00:00:00:22!" />
+<arg name="log_path" default="$(env HOME)/logs" />
+<arg name="robot_local_map_frame" default="map" />
+<arg name="output" default="log" />
+<arg name="frontier_selection" default="1"/>
+<param name="/use_sim_time" value="true"/>
+<param name="use_sim_time"  value="true"/>
+    
+
+    <group ns="robot_0">
+        <!--include file="$(find adhoc_communication)/launch/adhoc_communication.launch">
+            <arg name="log_path" value="logs/15-11-20/14-06-42/1" />
+            <arg name="robot_name" value="robot_0" />
+            <arg name="robot_prefix" value="/robot_0" />
+            <arg name="interface" value="lo" />
+            <arg name="simulation_mode" value="true"/>
+            <arg name="num_of_robots" value="2" />
+            <arg name="use_sim_time" value="true" />
+            <arg name="mac" value="02:01:00:00:00:00" />
+        <arg name="launch_prefix" value="sudo ROS_MASTER_URI=http://aravindthinkpad:11311" />
+            <arg name="sim_robot_macs" value="robot_0,02:01:00:00:00:00!robot_1,02:02:00:00:00:00" />
+        </include-->
+
+
+
+        <include file="$(find map_merger)/launch/map_merger.launch">
+            <arg name="robot_name" value="robot_0" />
+            <arg name="robot_prefix" value="/robot_0" />
+            <arg name="robot_local_map_frame" value="robot_0/map" />
+            <arg name="output" value="log" />
+            <arg name="log_path" value="logs/15-11-20/14-06-42/1" />
+            <arg name="use_sim_time" value="true" />
+        </include>
+ </group>
+<node pkg="adhoc_communication" type="adhoc_communication" name="robot_0">
+    <param name="mac" value="00:11:00:00:00:00"/>
+    <param name="robot_name" value="robot_0"/>
+    <param name="interface" value="lo"/>
+    <param name="num_link_retrans" value="3" />
+    <param name="num_e2e_retrans" value="3" />
+    <param name="num_rreq" value="1" />
+    <param name="max_frame_size" value="1500" />
+    <param name="hop_limit_min" value="0" />
+    <param name="hop_limit_max" value="0" />
+    <param name="hop_limit_increment" value="3" />
+    <param name="max_packet_size" value="1500000" />
+    <param name="beacon_interval" value="100" />
+    <param name="enable_cooperative_relaying" value="true" />
+    <param name="simulation_mode" value="true"/>
+    <param name="robots_in_simulation" value="5" />
+    <param name="sim_robot_macs" value="robot_0,00:11:00:00:00:00!robot_1,11:00:00:00:00:00!robot_2,22:00:00:00:00:00!robot_3,33:00:00:00:00:00!robot_4,44:00:00:00:00:00!" />
+    <param name="p_tx" value="1" />
+</node>
+
+<node pkg="adhoc_communication" type="adhoc_communication" name="robot_1"  >
+    <param name="mac" value="11:00:00:00:00:00"/>
+    <param name="robot_name" value="robot_1"/>
+    <param name="interface" value="lo"/>
+    <param name="num_link_retrans" value="3" />
+    <param name="num_e2e_retrans" value="3" />
+    <param name="num_rreq" value="1" />
+    <param name="max_frame_size" value="1500" />
+    <param name="hop_limit_min" value="0" />
+    <param name="hop_limit_max" value="0" />
+    <param name="hop_limit_increment" value="3" />
+    <param name="max_packet_size" value="1500000" />
+    <param name="beacon_interval" value="100" />
+    <param name="enable_cooperative_relaying" value="true" />
+    <param name="simulation_mode" value="true"/>
+    <param name="robots_in_simulation" value="5" />
+    <param name="sim_robot_macs" value="robot_0,00:11:00:00:00:00!robot_1,11:00:00:00:00:00!robot_2,22:00:00:00:00:00!robot_3,33:00:00:00:00:00!robot_4,44:00:00:00:00:00!" />
+    <param name="p_tx" value="1" />
+</node>
+   
+    <group ns="robot_1">
+        <!--include file="$(find adhoc_communication)/launch/adhoc_communication.launch">
+            <arg name="log_path" value="logs/15-11-20/14-06-42/1" />
+            <arg name="robot_name" value="robot_1" />
+            <arg name="robot_prefix" value="/robot_1" />
+            <arg name="interface" value="lo" />
+            <arg name="simulation_mode" value="true"/>
+            <arg name="num_of_robots" value="2" />
+            <arg name="use_sim_time" value="true" />
+            <arg name="mac" value="02:02:00:00:00:00" />
+        <arg name="launch_prefix" value="sudo ROS_MASTER_URI=http://aravindthinkpad:11311" />
+            <arg name="sim_robot_macs" value="robot_0,02:01:00:00:00:00!robot_1,02:02:00:00:00:00" />
+        </include-->
+
+        <include file="$(find map_merger)/launch/map_merger.launch">
+            <arg name="robot_name" value="robot_1" />
+            <arg name="robot_prefix" value="/robot_1" />
+            <arg name="robot_local_map_frame" value="robot_1/map" />
+            <arg name="output" value="log" />
+            <arg name="log_path" value="logs/15-11-20/14-06-42/1" />
+            <arg name="use_sim_time" value="true" />
+        </include>
+    </group>
+</launch>

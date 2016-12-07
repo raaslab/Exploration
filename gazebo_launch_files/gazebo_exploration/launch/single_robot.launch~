@@ -1,0 +1,14 @@
+<launch>
+    <param name="robot_description"
+    command="$(find xacro)/xacro.py '$(find p3dx_description)/urdf/pioneer3dx.xacro'" />
+
+  <!-- BEGIN ROBOT 1-->
+  <group ns="robot1">
+    <param name="tf_prefix" value="robot2" />
+    <include file="$(find gazebo_exploration)/launch/one_robot.launch" >
+      <arg name="init_pose" value="-x 2 -y 2 -z 0" />
+      <arg name="robot_name"  value="Robot2" />
+    </include>
+  </group>
+
+</launch>

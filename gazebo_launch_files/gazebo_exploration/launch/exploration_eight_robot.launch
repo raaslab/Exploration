@@ -1,0 +1,171 @@
+<launch>
+  <param name="/use_sim_time" value="true"/>
+
+  <!-- Run the map server -->
+  <node name="map_server" pkg="map_server" type="map_server" args="$(find pioneer_2dnav)/maps/dars_test2.yaml" respawn="false" output="screen">
+    <param name="frame_id" value="/map" />
+  </node>
+
+
+  <group ns="robot1">
+    <include file="$(find gazebo_exploration)/launch/move_base.launch" >
+      <arg name="init_x" value="1" />
+      <arg name="init_y" value="2" />
+      <arg name="robot_name"  value="robot1" />
+    </include>
+    <include file="$(find technologicExploration)/src/laser_filter.launch"/>
+    <node pkg="hector_trajectory_server" type="hector_trajectory_server" name="hector_trajectory_server">
+    
+    <param name="target_frame_name" value="/map" />
+
+    <param name="source_frame_name" type="string" value="/robot1/base_link" />
+
+  </node>
+  </group>
+
+  <group ns="robot2">
+    <include file="$(find gazebo_exploration)/launch/move_base.launch" >
+      <arg name="init_x" value="0" />
+      <arg name="init_y" value="2" />
+      <arg name="robot_name"  value="robot2" />
+    </include>
+    <include file="$(find technologicExploration)/src/laser_filter.launch"/>
+    <node pkg="hector_trajectory_server" type="hector_trajectory_server" name="hector_trajectory_server">
+    
+    <param name="target_frame_name" value="/map" />
+
+    <param name="source_frame_name" type="string" value="/robot2/base_link" />
+
+  </node>
+  </group>
+
+  <group ns="robot3">
+    <include file="$(find gazebo_exploration)/launch/move_base.launch" >
+      <arg name="init_x" value="0" />
+      <arg name="init_y" value="0" />
+      <arg name="robot_name"  value="robot3" />
+    </include>
+    <include file="$(find technologicExploration)/src/laser_filter.launch"/>
+    <node pkg="hector_trajectory_server" type="hector_trajectory_server" name="hector_trajectory_server">
+    
+    <param name="target_frame_name" value="/map" />
+
+    <param name="source_frame_name" type="string" value="/robot3/base_link" />
+
+  </node>
+  </group>
+
+  <group ns="robot4">
+    <include file="$(find gazebo_exploration)/launch/move_base.launch" >
+      <arg name="init_x" value="1" />
+      <arg name="init_y" value="0" />
+      <arg name="robot_name"  value="robot4" />
+    </include>
+    <include file="$(find technologicExploration)/src/laser_filter.launch"/>
+    <node pkg="hector_trajectory_server" type="hector_trajectory_server" name="hector_trajectory_server">
+    
+    <param name="target_frame_name" value="/map" />
+
+    <param name="source_frame_name" type="string" value="/robot4/base_link" />
+
+  </node>
+  </group>
+
+  <group ns="robot5">
+    <include file="$(find gazebo_exploration)/launch/move_base.launch" >
+      <arg name="init_x" value="0" />
+      <arg name="init_y" value="4" />
+      <arg name="robot_name"  value="robot5" />
+    </include>
+    <include file="$(find technologicExploration)/src/laser_filter.launch"/>
+    <node pkg="hector_trajectory_server" type="hector_trajectory_server" name="hector_trajectory_server">
+    
+    <param name="target_frame_name" value="/map" />
+
+    <param name="source_frame_name" type="string" value="/robot5/base_link" />
+
+  </node>
+  </group>
+
+  <group ns="robot6">
+    <include file="$(find gazebo_exploration)/launch/move_base.launch" >
+      <arg name="init_x" value="1" />
+      <arg name="init_y" value="4" />
+      <arg name="robot_name"  value="robot6" />
+    </include>
+    <include file="$(find technologicExploration)/src/laser_filter.launch"/>
+    <node pkg="hector_trajectory_server" type="hector_trajectory_server" name="hector_trajectory_server">
+    
+    <param name="target_frame_name" value="/map" />
+
+    <param name="source_frame_name" type="string" value="/robot6/base_link" />
+
+  </node>
+  </group>
+
+  <group ns="robot7">
+    <include file="$(find gazebo_exploration)/launch/move_base.launch" >
+      <arg name="init_x" value="0" />
+      <arg name="init_y" value="6" />
+      <arg name="robot_name"  value="robot7" />
+    </include>
+    <include file="$(find technologicExploration)/src/laser_filter.launch"/>
+    <node pkg="hector_trajectory_server" type="hector_trajectory_server" name="hector_trajectory_server">
+    
+    <param name="target_frame_name" value="/map" />
+
+    <param name="source_frame_name" type="string" value="/robot7/base_link" />
+
+  </node>
+  </group>
+
+  <group ns="robot8">
+    <include file="$(find gazebo_exploration)/launch/move_base.launch" >
+      <arg name="init_x" value="1" />
+      <arg name="init_y" value="6" />
+      <arg name="robot_name"  value="robot8" />
+    </include>
+    <include file="$(find technologicExploration)/src/laser_filter.launch"/>
+    <node pkg="hector_trajectory_server" type="hector_trajectory_server" name="hector_trajectory_server">
+    
+    <param name="target_frame_name" value="/map" />
+
+    <param name="source_frame_name" type="string" value="/robot8/base_link" />
+
+  </node>
+  </group>
+
+
+ <node pkg="beginner_tutorials" type="scan2pcl1" name="scan2pcl1"/>
+ <node pkg="beginner_tutorials" type="scan2pcl2" name="scan2pcl2"/>
+ <node pkg="beginner_tutorials" type="scan2pcl3" name="scan2pcl3"/>
+ <node pkg="beginner_tutorials" type="scan2pcl4" name="scan2pcl4"/>
+
+ <node pkg="beginner_tutorials" type="scan2pcl5" name="scan2pcl5"/>
+ <node pkg="beginner_tutorials" type="scan2pcl6" name="scan2pcl6"/>
+ <node pkg="beginner_tutorials" type="scan2pcl7" name="scan2pcl7"/>
+ <node pkg="beginner_tutorials" type="scan2pcl8" name="scan2pcl8"/>
+
+ <node pkg="technologicExploration" type="robot1_pose_publisher.py" name="robot1_pose_publisher.py"/>
+ <node pkg="technologicExploration" type="robot2_pose_publisher.py" name="robot2_pose_publisher.py"/>
+ <node pkg="technologicExploration" type="robot3_pose_publisher.py" name="robot3_pose_publisher.py"/>
+ <node pkg="technologicExploration" type="robot4_pose_publisher.py" name="robot4_pose_publisher.py"/>
+
+  <node pkg="technologicExploration" type="robot5_pose_publisher.py" name="robot5_pose_publisher.py"/>
+ <node pkg="technologicExploration" type="robot6_pose_publisher.py" name="robot6_pose_publisher.py"/>
+ <node pkg="technologicExploration" type="robot7_pose_publisher.py" name="robot7_pose_publisher.py"/>
+ <node pkg="technologicExploration" type="robot8_pose_publisher.py" name="robot8_pose_publisher.py"/>
+
+ <node pkg="technologicExploration" type="distance_time_robot1.py" name="distance_time_robot1.py"/>
+ <node pkg="technologicExploration" type="distance_time_robot2.py" name="distance_time_robot2.py"/>
+ <node pkg="technologicExploration" type="distance_time_robot3.py" name="distance_time_robot3.py"/>
+ <node pkg="technologicExploration" type="distance_time_robot4.py" name="distance_time_robot4.py"/>
+
+ <node pkg="technologicExploration" type="distance_time_robot5.py" name="distance_time_robot5.py"/>
+ <node pkg="technologicExploration" type="distance_time_robot6.py" name="distance_time_robot6.py"/>
+ <node pkg="technologicExploration" type="distance_time_robot7.py" name="distance_time_robot7.py"/>
+ <node pkg="technologicExploration" type="distance_time_robot8.py" name="distance_time_robot8.py"/>
+
+<include file="$(find octomap_server)/launch/octomap_mapping.launch" />
+
+</launch>

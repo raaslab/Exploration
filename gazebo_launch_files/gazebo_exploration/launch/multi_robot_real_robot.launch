@@ -1,0 +1,7 @@
+<launch>
+
+  <!-- Run the map server -->
+  <node name="map_server" pkg="map_server" type="map_server" args="$(find pioneer_2dnav)/maps/lab_gmapping2.yaml" respawn="false" output="screen">
+    <param name="frame_id" value="/map" />
+  </node> 
+</launch>

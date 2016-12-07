@@ -1,0 +1,60 @@
+<launch>    
+  <!--- Run AMCL -->
+  <arg name="robot_name"/>
+  <arg name="init_x"/>
+  <arg name="init_y"/>
+
+<node pkg="amcl" type="amcl" name="amcl" args="scan:=p3dx/scan" output="screen">
+  <param name="odom_model_type" value="diff"/>
+  <param name="initial_pose_x" value="$(arg init_x)"/>
+  <param name="initial_pose_y" value="$(arg init_y)"/>
+  <param name="odom_frame_id" value="/$(arg robot_name)/odom" />
+  <param name="base_frame_id" value="/$(arg robot_name)/base_link" />
+  <param name="use_map_topic" value="true" />
+  <param name="initial_cov_xx" value="0.0*0.0" />
+  <param name="initial_cov_yy" value="0.0*0.0" />
+  <remap from="map" to="/map" />
+</node>
+<!--param name="move_base/NavfnROS/allow_unknown" value="false"/>
+<param name="move_base/planner_patience" value="15"/>
+<param name="move_base/controller_patience" value="25"/-->
+<param name="move_base/NavfnROS/default_tolerance" value="0.5"/>
+
+
+
+<!--node pkg="gmapping" type="slam_gmapping" name="slam_gmapping">
+      <param name="odom_frame" value="/$(arg robot_name)/odom" />
+      <param name="base_frame" value="/$(arg robot_name)/base_link" />
+      <param name="map_frame" value="/$(arg robot_name)/map" />
+      <param name="map_update_interval" value="0.5" />
+      <param name="maxUrange" value="3.5" />
+      <param name="maxRange" value="5.0" />
+      <param name="linearUpdate" value="0.03" />
+      <param name="angularUpdate" value="0.05" />
+      <param name="temporalUpdate" value="0.1" />
+      <param name="resampleThreshold" value="0.5" />
+
+
+      <param name="xmin" value="-100.0" />
+      <param name="ymin" value="-100.0" />
+      <param name="xmax" value="100.0" />
+      <param name="ymax" value="100.0" />
+      <param name="delta" value="0.25" />
+
+      <param name="srr" value="-0.0" />
+      <param name="srt" value="0.0" />
+      <param name="stt" value="0.0" />
+      <param name="str" value="0.0" />
+      <remap from="scan" to="p3dx/scan"/>
+    </node-->
+
+  
+  <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
+    <rosparam file="$(find pioneer_2dnav)/params/costmap_common_params.yaml" command="load" ns="global_costmap"/>
+    <rosparam file="$(find pioneer_2dnav)/params/costmap_common_params.yaml" command="load" ns="local_costmap" />
+    <rosparam file="$(find pioneer_2dnav)/params/isr_floor0/local_costmap_params.yaml"  command="load" />
+    <rosparam file="$(find pioneer_2dnav)/params/global_costmap_params.yaml" command="load" />
+    <rosparam file="$(find pioneer_2dnav)/params/base_local_planner_params.yaml" command="load" />
+    <remap from="map" to="/map"/>
+  </node>
+</launch>

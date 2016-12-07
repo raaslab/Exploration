@@ -1,0 +1,43 @@
+<launch>
+  <param name="/use_sim_time" value="true"/>
+<group ns="robot1">
+<node pkg="hector_trajectory_server" type="hector_trajectory_server" name="hector_trajectory_server">
+    
+    <param name="target_frame_name" value="/map" />
+
+    <param name="source_frame_name" type="string" value="/robot1/base_link" />
+
+  </node>
+  </group>
+
+  <group ns="robot2">
+<node pkg="hector_trajectory_server" type="hector_trajectory_server" name="hector_trajectory_server">
+    
+    <param name="target_frame_name" value="/map" />
+
+    <param name="source_frame_name" type="string" value="/robot2/base_link" />
+
+  </node>
+  </group>
+  <group ns="robot3">
+<node pkg="hector_trajectory_server" type="hector_trajectory_server" name="hector_trajectory_server">
+    
+    <param name="target_frame_name" value="/map" />
+
+    <param name="source_frame_name" type="string" value="/robot3/base_link" />
+
+  </node>
+  </group>
+ 
+  
+  <group ns="robot4">
+<node pkg="hector_trajectory_server" type="hector_trajectory_server" name="hector_trajectory_server">
+    
+    <param name="target_frame_name" value="/map" />
+
+    <param name="source_frame_name" type="string" value="/robot4/base_link" />
+
+  </node>
+  </group>
+
+  </launch>

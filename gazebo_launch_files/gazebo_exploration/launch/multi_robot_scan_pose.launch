@@ -1,0 +1,11 @@
+<launch> 
+ <node pkg="beginner_tutorials" type="scan2pcl1" name="scan2pcl1"/>
+ <node pkg="beginner_tutorials" type="scan2pcl2" name="scan2pcl2"/>
+ <node pkg="beginner_tutorials" type="scan2pcl3" name="scan2pcl3"/>
+ <node pkg="beginner_tutorials" type="scan2pcl4" name="scan2pcl4"/>
+
+ <node pkg="technologicExploration" type="robot1_pose_publisher.py" name="robot1_pose_publisher.py"/>
+ <node pkg="technologicExploration" type="robot2_pose_publisher.py" name="robot2_pose_publisher.py"/>
+ <node pkg="technologicExploration" type="robot3_pose_publisher.py" name="robot3_pose_publisher.py"/>
+ <node pkg="technologicExploration" type="robot4_pose_publisher.py" name="robot4_pose_publisher.py"/>
+</launch> 

@@ -1,0 +1,57 @@
+<launch>
+
+  <param name="/use_sim_time" value="true"/>
+<group ns="robot_0">
+<node pkg="cs_merge_publisher" type="cs_merge_publisher" name="cs_merge_publisher" output="screen">
+  </node>
+<node pkg="cs_merge_controller" type="cs_merge_controller" name="cs_merge_controller" output="screen">
+    <rosparam>
+      agents: ['robot_0']
+      methods: ['cs_merge_icp_svd', 'cs_merge_icp_gradient', 'cs_merge_hough_ccr', 'cs_merge_hough_corner']
+    </rosparam>
+  </node>
+
+  <node pkg="cs_merge_methods" type="cs_merge_icp_svd" name="cs_merge_icp_svd" output="screen">
+  </node>
+  <node pkg="cs_merge_methods" type="cs_merge_icp_gradient" name="cs_merge_icp_gradient" output="screen">
+    <rosparam>
+      ransac_amount: .05
+      repetitions: 25
+    </rosparam>
+  </node>
+  <node pkg="cs_merge_methods" type="cs_merge_hough_ccr" name="cs_merge_hough_ccr" output="screen">
+  </node>
+  <node pkg="cs_merge_methods" type="cs_merge_hough_corner" name="cs_merge_hough_corner" output="screen">
+  <param name="threshold" value="0.8" />
+  </node>
+</group>
+
+
+<group ns="robot_1">
+  <node pkg="cs_merge_publisher" type="cs_merge_publisher" name="cs_merge_publisher" output="screen">
+  </node>
+  <node pkg="cs_merge_controller" type="cs_merge_controller" name="cs_merge_controller" output="screen">
+    <rosparam>
+      agents: ['robot_1']
+      methods: ['cs_merge_icp_svd', 'cs_merge_icp_gradient', 'cs_merge_hough_ccr', 'cs_merge_hough_corner']
+    </rosparam>
+  </node>
+
+  <node pkg="cs_merge_methods" type="cs_merge_icp_svd" name="cs_merge_icp_svd" output="screen">
+  </node>
+  <node pkg="cs_merge_methods" type="cs_merge_icp_gradient" name="cs_merge_icp_gradient" output="screen">
+    <rosparam>
+      ransac_amount: .05
+      repetitions: 25
+    </rosparam>
+  </node>
+  <node pkg="cs_merge_methods" type="cs_merge_hough_ccr" name="cs_merge_hough_ccr" output="screen">
+  </node>
+  <node pkg="cs_merge_methods" type="cs_merge_hough_corner" name="cs_merge_hough_corner" output="screen">
+  <param name="threshold" value="0.8" />
+  </node>
+</group>
+
+  
+
+</launch>

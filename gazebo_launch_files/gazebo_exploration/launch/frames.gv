@@ -1,0 +1,25 @@
+digraph G {
+"robot2/odom" -> "robot2/base_link"[label="Broadcaster: /gazebo\nAverage rate: 100.201 Hz\nMost recent transform: 392.743 ( 0.005 sec old)\nBuffer length: 4.970 sec\n"];
+"robot2/base_link" -> "robot2/front_sonar"[label="Broadcaster: /robot1/robot_state_publisher\nAverage rate: 50.203 Hz\nMost recent transform: 393.203 ( -0.455 sec old)\nBuffer length: 4.920 sec\n"];
+"robot2/p3dx_left_wheel" -> "robot2/p3dx_left_hubcap"[label="Broadcaster: /robot1/robot_state_publisher\nAverage rate: 50.203 Hz\nMost recent transform: 393.203 ( -0.455 sec old)\nBuffer length: 4.920 sec\n"];
+"robot2/p3dx_right_wheel" -> "robot2/p3dx_right_hubcap"[label="Broadcaster: /robot1/robot_state_publisher\nAverage rate: 50.203 Hz\nMost recent transform: 393.203 ( -0.455 sec old)\nBuffer length: 4.920 sec\n"];
+"robot2/base_link" -> "robot2/top_plate"[label="Broadcaster: /robot1/robot_state_publisher\nAverage rate: 50.203 Hz\nMost recent transform: 393.203 ( -0.455 sec old)\nBuffer length: 4.920 sec\n"];
+"robot2/center_wheel" -> "robot2/center_hubcap"[label="Broadcaster: /robot1/robot_state_publisher\nAverage rate: 50.203 Hz\nMost recent transform: 393.203 ( -0.455 sec old)\nBuffer length: 4.920 sec\n"];
+"robot2/base_link" -> "robot2/lms100"[label="Broadcaster: /robot1/robot_state_publisher\nAverage rate: 50.203 Hz\nMost recent transform: 393.203 ( -0.455 sec old)\nBuffer length: 4.920 sec\n"];
+edge [style=invis];
+ subgraph cluster_legend { style=bold; color=black; label ="view_frames Result";
+"Recorded at time: 392.748"[ shape=plaintext ] ;
+ }->"robot2/odom";
+edge [style=invis];
+ subgraph cluster_legend { style=bold; color=black; label ="view_frames Result";
+"Recorded at time: 392.748"[ shape=plaintext ] ;
+ }->"robot2/p3dx_left_wheel";
+edge [style=invis];
+ subgraph cluster_legend { style=bold; color=black; label ="view_frames Result";
+"Recorded at time: 392.748"[ shape=plaintext ] ;
+ }->"robot2/p3dx_right_wheel";
+edge [style=invis];
+ subgraph cluster_legend { style=bold; color=black; label ="view_frames Result";
+"Recorded at time: 392.748"[ shape=plaintext ] ;
+ }->"robot2/center_wheel";
+}

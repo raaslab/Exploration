@@ -1,0 +1,34 @@
+<launch>
+  <param name="/use_sim_time" value="true"/>
+
+  <!-- Run the map server -->
+  <!--node name="map_server" pkg="map_server" type="map_server" args="$(find pioneer_2dnav)/maps/dars_test2.yaml" respawn="false" output="screen">
+    <param name="frame_id" value="/map" />
+  </node>-->
+
+
+  <group ns="robot2">
+    <include file="$(find gazebo_exploration)/launch/move_base.launch" >
+      <arg name="init_x" value="2" />
+      <arg name="init_y" value="2" />
+      <arg name="robot_name"  value="robot2" />
+    </include>
+    <include file="$(find technologicExploration)/src/laser_filter.launch"/>
+<include file="$(find octomap_server)/launch/octomap_mapping.launch" />
+
+
+  <node pkg="hector_trajectory_server" type="hector_trajectory_server" name="hector_trajectory_server">  
+</group>
+
+ <node pkg="beginner_tutorials" type="scan2pcl2" name="scan2pcl2"/>
+
+
+ <node pkg="technologicExploration" type="robot2_pose_publisher.py" name="robot2_pose_publisher.py"/>
+  
+    
+    <param name="target_frame_name" value="/map" />
+
+    <param name="source_frame_name" type="string" value="/robot2/base_link" />
+
+  </node>
+</launch>
