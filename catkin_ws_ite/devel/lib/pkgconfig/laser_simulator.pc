@@ -1,0 +1,8 @@
+prefix=/home/aravind/catkin_ws_ite/devel
+
+Name: laser_simulator
+Description: Description of laser_simulator
+Version: 0.0.0
+Cflags: -I/home/aravind/catkin_ws_ite/devel/include -I/home/aravind/catkin_ws_ite/src/scarab/laser_simulator/include
+Libs: -L/home/aravind/catkin_ws_ite/devel/lib -llaser_simlib
+Requires: roscpp nav_msgs sensor_msgs geometry_msgs rosbag tf message_runtime

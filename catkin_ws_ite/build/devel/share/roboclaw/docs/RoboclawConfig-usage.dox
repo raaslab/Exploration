@@ -1,0 +1,24 @@
+\subsubsection usage Usage
+\verbatim
+<node name="roboclaw_node" pkg="roboclaw" type="roboclaw_node">
+  <param name="pid_p" type="double" value="1.0" />
+  <param name="pid_i" type="double" value="4.0" />
+  <param name="pid_d" type="double" value="0.2" />
+  <param name="pid_iclamp" type="double" value="500.0" />
+  <param name="accel_max" type="double" value="1.0" />
+  <param name="max_wheel_vel" type="double" value="0.8" />
+  <param name="min_wheel_vel" type="double" value="0.0" />
+  <param name="wheel_diam" type="double" value="0.1" />
+  <param name="quad_pulse_per_motor_rev" type="int" value="2000" />
+  <param name="motor_to_wheel_ratio" type="double" value="38.35" />
+  <param name="axle_width" type="double" value="0.255" />
+  <param name="freq" type="double" value="50.0" />
+  <param name="odom_frame" type="str" value="odom_motor" />
+  <param name="base_frame" type="str" value="base_link" />
+  <param name="pid_error_reset_v_step_threshold" type="double" value="0.1" />
+  <param name="pid_error_reset_w_step_threshold" type="double" value="0.3" />
+  <param name="pid_error_reset_min_v" type="double" value="0.01" />
+  <param name="pid_error_reset_min_w" type="double" value="0.01" />
+</node>
+\endverbatim
+

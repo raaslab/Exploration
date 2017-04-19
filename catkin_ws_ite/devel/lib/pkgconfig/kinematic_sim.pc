@@ -1,0 +1,8 @@
+prefix=/home/aravind/catkin_ws_ite/devel
+
+Name: kinematic_sim
+Description: Description of kinematic_sim
+Version: 0.0.0
+Cflags: 
+Libs: -L/home/aravind/catkin_ws_ite/devel/lib 
+Requires: roscpp tf hfn

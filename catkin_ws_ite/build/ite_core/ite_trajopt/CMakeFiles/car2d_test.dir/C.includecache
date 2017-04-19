@@ -1,0 +1,16 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/aravind/catkin_ws_ite/src/ite_core/ite_trajopt/include/ite_trajopt/car2d/car2dMPC.c
+car2dMPC.h
+/home/aravind/catkin_ws_ite/src/ite_core/ite_trajopt/include/ite_trajopt/car2d/car2dMPC.h
+math.h
+-
+
+/home/aravind/catkin_ws_ite/src/ite_core/ite_trajopt/include/ite_trajopt/car2d/car2dMPC.h
+

@@ -1,0 +1,8 @@
+prefix=/home/aravind/catkin_ws_ite/build/devel
+
+Name: ite_grid
+Description: Description of ite_grid
+Version: 0.0.0
+Cflags: -I/home/aravind/catkin_ws_ite/build/devel/include -I/home/aravind/catkin_ws_ite/src/ite_core/ite_grid/include
+Libs: -L/home/aravind/catkin_ws_ite/build/devel/lib -lite_grid
+Requires: roscpp ite_util pcl_ros tf_conversions octomap_msgs std_msgs geometry_msgs message_runtime

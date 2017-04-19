@@ -1,0 +1,21 @@
+(cl:defpackage ite_command-msg
+  (:use )
+  (:export
+   "<EXPLORESYSTEMDATA>"
+   "EXPLORESYSTEMDATA"
+   "<TRAJECTORYDATA>"
+   "TRAJECTORYDATA"
+   "<TEAMACTIONS>"
+   "TEAMACTIONS"
+   "<PLANDATA2>"
+   "PLANDATA2"
+   "<ROBOTACTIONS>"
+   "ROBOTACTIONS"
+   "<PLANDATA>"
+   "PLANDATA"
+   "<INFOTRAJ>"
+   "INFOTRAJ"
+   "<INFOPATH>"
+   "INFOPATH"
+  ))
+

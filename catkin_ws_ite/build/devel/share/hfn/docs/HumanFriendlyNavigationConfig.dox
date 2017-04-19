@@ -1,0 +1,19 @@
+\subsubsection parameters ROS parameters
+
+Reads and maintains the following parameters on the ROS server
+
+- \b "~range_max" : \b [double] Maximum range for free distance (m) min: 0.0, default: 30.0, max: 30.0
+- \b "~tau_1" : \b [double] Stopping time from max velocity min: 0.0, default: 2.0, max: 10.0
+- \b "~tau_2" : \b [double] Time constant for linear velocity update min: 0.0, default: 0.25, max: 10.0
+- \b "~tau_r" : \b [double] Time constant for angular velocity update min: 0.0, default: 1.0, max: 10.0
+- \b "~v_opt" : \b [double] Nominal linear velocity min: 0.0, default: 0.5, max: 1.0
+- \b "~w_max" : \b [double] Maximum angular velocity min: 0.0, default: 1.5, max: 2.0
+- \b "~freq" : \b [double] The update rate of velocity command (Hz) min: 0.0, default: 5.0, max: 30.0
+- \b "~goal_thresh" : \b [double] Threshold distance for reaching goal (m) min: 0.0, default: 0.05, max: 0.5
+- \b "~alpha_thresh" : \b [double] Threshold angle for turn only (rad) min: 0.0, default: 2.094, max: 3.15
+- \b "~base_frame_id" : \b [str] The local frame of the robot min: , default: base, max: 
+- \b "~axle_width" : \b [double] Spacing between wheels (m) min: 0.01, default: 0.255, max: 0.4
+- \b "~robot_radius" : \b [double] Size of robot disk (m) min: 0.0, default: 0.23, max: 1.0
+- \b "~safety_margin" : \b [double] Amount to inflate robot disk (m) min: 0.0, default: 0.1, max: 1.0
+- \b "~social_margin" : \b [double] Increased margin in free space (m) min: 0.0, default: 0.2, max: 1.0
+

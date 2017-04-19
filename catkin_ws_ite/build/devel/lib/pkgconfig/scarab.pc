@@ -1,0 +1,8 @@
+prefix=/home/aravind/catkin_ws_ite/build/devel
+
+Name: scarab
+Description: Description of scarab
+Version: 0.0.0
+Cflags: 
+Libs: -L/home/aravind/catkin_ws_ite/build/devel/lib 
+Requires: 

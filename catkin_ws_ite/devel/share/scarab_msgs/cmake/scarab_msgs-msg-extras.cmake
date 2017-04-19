@@ -1,0 +1,2 @@
+set(scarab_msgs_MESSAGE_FILES "/home/aravind/catkin_ws_ite/devel/share/scarab_msgs/msg/MoveAction.msg;/home/aravind/catkin_ws_ite/devel/share/scarab_msgs/msg/MoveActionGoal.msg;/home/aravind/catkin_ws_ite/devel/share/scarab_msgs/msg/MoveActionResult.msg;/home/aravind/catkin_ws_ite/devel/share/scarab_msgs/msg/MoveActionFeedback.msg;/home/aravind/catkin_ws_ite/devel/share/scarab_msgs/msg/MoveGoal.msg;/home/aravind/catkin_ws_ite/devel/share/scarab_msgs/msg/MoveResult.msg;/home/aravind/catkin_ws_ite/devel/share/scarab_msgs/msg/MoveFeedback.msg")
+set(scarab_msgs_SERVICE_FILES "")

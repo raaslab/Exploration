@@ -1,0 +1,8 @@
+prefix=/home/aravind/catkin_ws_ite/devel
+
+Name: ite_info
+Description: Description of ite_info
+Version: 0.0.0
+Cflags: -I/home/aravind/catkin_ws_ite/devel/include -I/home/aravind/catkin_ws_ite/src/ite_core/ite_info/include
+Libs: -L/home/aravind/catkin_ws_ite/devel/lib -lite_info
+Requires: ite_grid

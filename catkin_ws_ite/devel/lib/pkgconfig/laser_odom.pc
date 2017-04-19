@@ -1,0 +1,8 @@
+prefix=/home/aravind/catkin_ws_ite/devel
+
+Name: laser_odom
+Description: Description of laser_odom
+Version: 0.0.0
+Cflags: 
+Libs: -L/home/aravind/catkin_ws_ite/devel/lib 
+Requires: roscpp rosbag angles tf sensor_msgs pcl_ros laser_geometry geometry_msgs visualization_msgs

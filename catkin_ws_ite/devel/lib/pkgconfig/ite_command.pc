@@ -1,0 +1,8 @@
+prefix=/home/aravind/catkin_ws_ite/devel
+
+Name: ite_command
+Description: Description of ite_command
+Version: 0.0.0
+Cflags: -I/home/aravind/catkin_ws_ite/devel/include -I/home/aravind/catkin_ws_ite/src/ite_core/ite_command/include
+Libs: -L/home/aravind/catkin_ws_ite/devel/lib 
+Requires: message_runtime geometry_msgs std_msgs ite_info ite_plan ite_trajopt

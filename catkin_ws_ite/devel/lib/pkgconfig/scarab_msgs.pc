@@ -1,0 +1,8 @@
+prefix=/home/aravind/catkin_ws_ite/devel
+
+Name: scarab_msgs
+Description: Description of scarab_msgs
+Version: 0.0.0
+Cflags: -I/home/aravind/catkin_ws_ite/devel/include
+Libs: -L/home/aravind/catkin_ws_ite/devel/lib 
+Requires: geometry_msgs message_generation std_msgs actionlib_msgs actionlib message_runtime

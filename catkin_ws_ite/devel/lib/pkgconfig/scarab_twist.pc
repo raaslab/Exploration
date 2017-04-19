@@ -1,0 +1,8 @@
+prefix=/home/aravind/catkin_ws_ite/devel
+
+Name: scarab_twist
+Description: Description of scarab_twist
+Version: 0.0.0
+Cflags: 
+Libs: -L/home/aravind/catkin_ws_ite/devel/lib 
+Requires: roscpp

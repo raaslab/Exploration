@@ -1,0 +1,2 @@
+ite_core/ite_command:ite_core/ite_grid:ite_core/ite_info:ite_core/ite_plan:ite_core/ite_trajopt:ite_core/ite_util:ite_core/octomap_multi:scarab/bb04:scarab/hfn:scarab/kinematic_sim:scarab/laser_odom:scarab/laser_simulator:scarab/mesh80211s:scarab/roboclaw:scarab/scarab:scarab/scarab_description:scarab/scarab_gazebo:scarab/scarab_msgs:scarab/scarab_twist:scarab/tf_throttle
+-DCATKIN_DEVEL_PREFIX=/home/aravind/catkin_ws_ite/devel -DCMAKE_INSTALL_PREFIX=/home/aravind/catkin_ws_ite/install -G Unix Makefiles

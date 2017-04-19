@@ -1,0 +1,6 @@
+geometry_msgs/Pose source
+geometry_msgs/Pose goal
+float64 budget
+string robotname
+---
+geometry_msgs/PoseArray orienteering_path

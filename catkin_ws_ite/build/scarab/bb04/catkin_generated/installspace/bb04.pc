@@ -1,0 +1,8 @@
+prefix=/home/aravind/catkin_ws_ite/install
+
+Name: bb04
+Description: Description of bb04
+Version: 0.0.0
+Cflags: 
+Libs: -L/home/aravind/catkin_ws_ite/install/lib 
+Requires: 

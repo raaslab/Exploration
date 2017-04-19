@@ -1,0 +1,23 @@
+\subsubsection parameters ROS parameters
+
+Reads and maintains the following parameters on the ROS server
+
+- \b "~pid_p" : \b [double] PID Proportional gain min: 0.0, default: 1.0, max: 50.0
+- \b "~pid_i" : \b [double] PID Integral gain min: 0.0, default: 4.0, max: 50.0
+- \b "~pid_d" : \b [double] PID Derivative gain min: 0.0, default: 0.2, max: 50.0
+- \b "~pid_iclamp" : \b [double] Max I magnitude min: 0.0, default: 500.0, max: 1000.0
+- \b "~accel_max" : \b [double] Maximum wheel acceleration (m/s^2) min: 0.0, default: 1.0, max: 2.0
+- \b "~max_wheel_vel" : \b [double] Maximum individual wheel speed (m/s) min: 0.0, default: 0.8, max: 1.0
+- \b "~min_wheel_vel" : \b [double] Minimum individual wheel speed (m/s) min: 0.0, default: 0.0, max: 1.0
+- \b "~wheel_diam" : \b [double] Wheel diameter (m) min: 0.01, default: 0.1, max: 0.5
+- \b "~quad_pulse_per_motor_rev" : \b [int] Quad pulses / motor revolution min: 0, default: 2000, max: 5000
+- \b "~motor_to_wheel_ratio" : \b [double] Number of motor revolutions for one wheel revolution min: 0.01, default: 38.35, max: 100.0
+- \b "~axle_width" : \b [double] Spacing between wheels (m) min: 0.01, default: 0.255, max: 0.4
+- \b "~freq" : \b [double] The update rate of odometry integration (Hz) min: 0.0, default: 50.0, max: 100.0
+- \b "~odom_frame" : \b [str] The odometry frame of the robot min: , default: odom_motor, max: 
+- \b "~base_frame" : \b [str] The local frame of the robot min: , default: base_link, max: 
+- \b "~pid_error_reset_v_step_threshold" : \b [double] Min linear velocity change to reset PID errors (m/s) min: 0.0, default: 0.1, max: 1.0
+- \b "~pid_error_reset_w_step_threshold" : \b [double] Min angular velocity change to reset PID errors (rad/s) min: 0.0, default: 0.3, max: 2.0
+- \b "~pid_error_reset_min_v" : \b [double] Min linear velocity to reset PID errors (m/s) min: 0.0, default: 0.01, max: 0.1
+- \b "~pid_error_reset_min_w" : \b [double] Min angular velocity to reset PID errors (rad/s) min: 0.0, default: 0.01, max: 0.2
+

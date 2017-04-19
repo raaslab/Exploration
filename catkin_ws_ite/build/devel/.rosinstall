@@ -1,0 +1,2 @@
+- setup-file:
+    local-name: /home/aravind/catkin_ws_ite/build/devel/setup.sh

@@ -1,0 +1,8 @@
+prefix=/home/aravind/catkin_ws_ite/build/devel
+
+Name: scarab_gazebo
+Description: Description of scarab_gazebo
+Version: 0.1.0
+Cflags: 
+Libs: -L/home/aravind/catkin_ws_ite/build/devel/lib 
+Requires: 

@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<package>
+  <name>ite_util</name>
+  <version>0.0.0</version>
+  <description>The ite_util package</description>
+  <maintainer email="bcharrow@todo.todo">bcharrow</maintainer>
+  <license>TODO</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>roscpp</build_depend>
+  <build_depend>rospy</build_depend>
+  <build_depend>tf</build_depend>
+  <build_depend>visualization_msgs</build_depend>
+  <build_depend>rosbag</build_depend>
+  <build_depend>cmake_modules</build_depend>
+  <build_depend>pcl_ros</build_depend>
+
+  <run_depend>roscpp</run_depend>
+  <run_depend>rospy</run_depend>
+  <run_depend>tf</run_depend>
+  <run_depend>visualization_msgs</run_depend>
+  <run_depend>rosbag</run_depend>
+  <run_depend>pcl_ros</run_depend>
+  
+</package>

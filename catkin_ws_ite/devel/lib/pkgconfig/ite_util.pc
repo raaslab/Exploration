@@ -1,0 +1,8 @@
+prefix=/home/aravind/catkin_ws_ite/devel
+
+Name: ite_util
+Description: Description of ite_util
+Version: 0.0.0
+Cflags: -I/home/aravind/catkin_ws_ite/src/ite_core/ite_util/include
+Libs: -L/home/aravind/catkin_ws_ite/devel/lib -lite_util
+Requires: roscpp rosbag tf visualization_msgs pcl_ros

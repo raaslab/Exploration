@@ -1,0 +1,18 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/aravind/catkin_ws_ite/src/scarab/scarab_twist/src/key_to_twist.cpp
+iostream
+-
+ros/ros.h
+/home/aravind/catkin_ws_ite/src/scarab/scarab_twist/src/ros/ros.h
+geometry_msgs/Twist.h
+/home/aravind/catkin_ws_ite/src/scarab/scarab_twist/src/geometry_msgs/Twist.h
+curses.h
+-
+

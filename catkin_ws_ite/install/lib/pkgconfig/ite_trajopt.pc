@@ -1,0 +1,8 @@
+prefix=/home/aravind/catkin_ws_ite/install
+
+Name: ite_trajopt
+Description: Description of ite_trajopt
+Version: 0.0.0
+Cflags: -I/home/aravind/catkin_ws_ite/install/include
+Libs: -L/home/aravind/catkin_ws_ite/install/lib -lite_trajopt_car2d -lite_trajopt_quad
+Requires: ite_grid ite_info message_runtime
