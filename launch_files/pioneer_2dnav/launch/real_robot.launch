@@ -13,6 +13,6 @@
  <node pkg="tf" type="static_transform_publisher" name="base_link_to_laser" args="0.225 0.0 0.1 0.0 0.0 0.0 1.0 base_link laser 100" />
 
   <node pkg="joy" type="joy_node" name="joy_node" output="screen">
-  <node pkg="beginner_tutorials" type="ControlRob" name="ControlRob" output="screen">
+  <node pkg="joy_controller" type="ControlRob" name="ControlRob" output="screen">
 	
 </launch>
